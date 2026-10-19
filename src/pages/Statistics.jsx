@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useSessionState, reviveDate } from '../hooks/useSessionState'
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  PieChart, Pie, Cell
-} from 'recharts'
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts'
 import { ChevronLeft, ChevronRight, FileDown, Image as ImageIcon, Loader2, Smile, CalendarCheck2, Flame, Heart } from '../components/icons'
 import { useMoodEntries } from '../hooks/useMoodEntries'
 import { useActivities } from '../hooks/useActivities'
 import { useThemeColors, useIsDark } from '../hooks/useIsDark'
-import { CATEGORY_COLORS, OTHER_COLOR, REPORT_CATEGORY_COLORS } from '../lib/chartColors'
+import { CATEGORY_COLORS, REPORT_CATEGORY_COLORS } from '../lib/chartColors'
 import { useMoods } from '../hooks/useMoods'
 import { useI18n } from '../i18n'
 import { calcStreak } from '../lib/dateUtils'
@@ -36,6 +33,7 @@ export default function Statistics() {
   const byDate = useMemo(() => latestByDate(entries), [entries])
   const activityById = useMemo(() => Object.fromEntries(activities.map((a) => [a.id, a])), [activities])
 
+  // timeSeries & activityStats chỉ còn dùng cho xuất báo cáo PDF/PNG.
   const timeSeries = useMemo(() => buildTimeSeries(period, cursor, byDate, i18n), [period, cursor, byDate, i18n])
   const periodEntries = useMemo(() => getBuckets(period, cursor, byDate, i18n).entries, [period, cursor, byDate, i18n])
   const distribution = useMemo(() => moodDistribution(periodEntries, moods), [periodEntries, moods])
@@ -51,13 +49,12 @@ export default function Statistics() {
 
   const activityStats = useMemo(() => activityAll.slice(0, 8), [activityAll])
 
-  // Biểu đồ tròn hoạt động: 8 hoạt động nhiều nhất (màu cố định theo thứ tự), phần còn lại gộp thành "Khác".
-  const buildActivityPie = (palette) => {
-    const top = activityAll.slice(0, 8).map((a, i) => ({ ...a, color: palette[i] }))
-    const rest = activityAll.slice(8).reduce((sum, a) => sum + a.count, 0)
-    return rest > 0 ? [...top, { id: 'other', label: t('stats.other'), emoji: '…', count: rest, color: OTHER_COLOR }] : top
-  }
-  const activityPie = useMemo(() => buildActivityPie(CATEGORY_COLORS(isDark)), [activityAll, isDark, t]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Biểu đồ tròn hoạt động: hiển thị TẤT CẢ hoạt động, màu lặp lại theo bảng màu nếu nhiều hơn số màu.
+  const buildActivityPie = (palette) => activityAll.map((a, i) => ({ ...a, color: palette[i % palette.length] }))
+  const activityPie = useMemo(() => buildActivityPie(CATEGORY_COLORS(isDark)), [activityAll, isDark]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Biểu đồ cảm xúc: chỉ vẽ các cảm xúc có dữ liệu, còn chú thích liệt kê đủ tất cả.
+  const moodPie = useMemo(() => distribution.filter((d) => d.count > 0), [distribution])
 
   const stats = useMemo(() => {
     const list = periodEntries
@@ -90,35 +87,33 @@ export default function Statistics() {
     }
   }
 
-  const hasData = timeSeries.some((p) => p.count > 0)
-  const tickStyle = { fontSize: 10, fill: c.muted }
+  const hasData = periodEntries.length > 0
   const tooltipStyle = { fontSize: 12, borderRadius: 4, border: 'none', boxShadow: '0 1px 3px rgb(0 0 0 / .3)', background: c.surface, color: c.ink }
-  const legendStyle = { fontSize: 11, color: c.ink }
+  const tooltipProps = { contentStyle: tooltipStyle, labelStyle: { color: c.ink }, itemStyle: { color: c.ink } }
 
-  function EmojiAxisTick({ x, y, payload }) {
-    const item = distribution.find((d) => d.emoji === payload.value) || activityStats.find((a) => a.emoji === payload.value)
-    return (
-      <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={16} textAnchor="middle" fontSize={16} fill={c.ink}>{payload.value}</text>
-        <text x={0} y={0} dy={30} textAnchor="middle" fontSize={9} fill={c.muted}>{item?.label || ''}</text>
-      </g>
-    )
-  }
-
-  function pieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
+  // Nhãn ngoài lát: emoji + %. Lát quá nhỏ (<3%) chỉ hiện emoji để không chồng chéo; chú thích bên dưới luôn đầy đủ.
+  function pieLabel({ cx, cy, midAngle, outerRadius, percent, emoji, payload }) {
     if (!percent) return null
     const RAD = Math.PI / 180
-    const r = innerRadius + (outerRadius - innerRadius) * 1.28
+    const r = outerRadius + 18
     const x = cx + r * Math.cos(-midAngle * RAD)
     const y = cy + r * Math.sin(-midAngle * RAD)
+    const icon = emoji || payload?.emoji || ''
+    const pct = `${(percent * 100).toFixed(0)}%`
     return (
-      <text x={x} y={y} fill={c.ink} fontSize={11} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-        {`${(percent * 100).toFixed(0)}%`}
+      <text x={x} y={y} fill={c.ink} fontSize={12} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {percent < 0.03 ? icon : `${icon} ${pct}`}
       </text>
     )
   }
 
-  const tooltipProps = { contentStyle: tooltipStyle, labelStyle: { color: c.ink }, itemStyle: { color: c.ink } }
+  const pieTooltip = (total) => (v, name, item) => [
+    `${t('stats.times', { n: v })} (${Math.round((v / total) * 100)}%)`,
+    `${item?.payload?.emoji || ''} ${name}`.trim(),
+  ]
+
+  const moodTotal = moodPie.reduce((a, d) => a + d.count, 0) || 1
+  const activityTotal = activityPie.reduce((a, d) => a + d.count, 0) || 1
 
   return (
     <div className="page page-enter pb-4">
@@ -162,73 +157,34 @@ export default function Statistics() {
           {!hasData ? (
             <p className="t-body-medium text-on-surface-variant text-center py-10">{t('stats.noData')}</p>
           ) : (
-            <div className="lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-6">
-              <ChartCard title={`${t('stats.trend')} (${label})`} wide>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={timeSeries} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={c.line} vertical={false} />
-                    <XAxis dataKey="label" tick={tickStyle} interval={period === 'month' ? 2 : 0} />
-                    <YAxis domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]} tick={tickStyle} width={30} />
-                    <Tooltip formatter={(v) => [v != null ? `${v}/5` : t('stats.none'), 'Mood']} {...tooltipProps} />
-                    <Legend wrapperStyle={legendStyle} />
-                    <Bar dataKey="avg" name={t('stats.avgMood')} radius={[4, 4, 0, 0]} fill={c.accent} isAnimationActive={false} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title={t('stats.distribution')} footer={<LegendList items={distribution} />}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={distribution} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={c.line} vertical={false} />
-                    <XAxis dataKey="emoji" tick={EmojiAxisTick} interval={0} tickLine={false} height={40} />
-                    <YAxis allowDecimals={false} tick={tickStyle} width={30} />
-                    <Tooltip {...tooltipProps} formatter={(v) => [t('stats.times', { n: v }), t('stats.count')]} />
-                    <Bar dataKey="count" name={t('stats.count')} radius={[4, 4, 0, 0]} isAnimationActive={false}>
-                      {distribution.map((d) => (<Cell key={d.key} fill={d.color} />))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title={t('stats.share')}>
+            <div className="lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-6 lg:items-start">
+              {/* 1. Phân bổ cảm xúc theo % */}
+              <ChartCard title={`${t('stats.share')} (${label})`} footer={<LegendList items={distribution} />}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={distribution.filter((d) => d.count > 0)}
+                      data={moodPie}
                       dataKey="count"
                       nameKey="label"
                       cx="50%"
-                      cy="44%"
-                      outerRadius="65%"
+                      cy="50%"
+                      outerRadius="62%"
                       label={pieLabel}
                       labelLine={{ stroke: c.line }}
-                      style={{ fontSize: 11 }}
+                      stroke={c.surface}
+                      strokeWidth={2}
                       isAnimationActive={false}
                     >
-                      {distribution.filter((d) => d.count > 0).map((d) => (<Cell key={d.key} fill={d.color} />))}
+                      {moodPie.map((d) => (<Cell key={d.key} fill={d.color} />))}
                     </Pie>
-                    <Legend verticalAlign="bottom" height={32} wrapperStyle={legendStyle} />
-                    <Tooltip {...tooltipProps} />
+                    <Tooltip {...tooltipProps} formatter={pieTooltip(moodTotal)} />
                   </PieChart>
                 </ResponsiveContainer>
               </ChartCard>
 
-              {activityStats.length > 0 && (
-                <ChartCard title={`${t('stats.activities')} (${label})`} footer={<LegendList items={activityStats} color={c.secondary} />}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={activityStats} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={c.line} vertical={false} />
-                      <XAxis dataKey="emoji" tick={EmojiAxisTick} interval={0} tickLine={false} height={40} />
-                      <YAxis allowDecimals={false} tick={tickStyle} width={30} />
-                      <Tooltip {...tooltipProps} formatter={(v) => [t('stats.times', { n: v }), t('stats.count')]} />
-                      <Bar dataKey="count" name={t('stats.count')} radius={[4, 4, 0, 0]} fill={c.secondary} isAnimationActive={false} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              )}
-
-              {activityPie.length > 0 && (
-                <ChartCard title={`${t('stats.activitiesShare')} (${label})`}>
+              {/* 2. Phân bổ hoạt động theo % */}
+              <ChartCard title={`${t('stats.activitiesShare')} (${label})`} footer={<LegendList items={activityPie} />}>
+                {activityPie.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -236,23 +192,23 @@ export default function Statistics() {
                         dataKey="count"
                         nameKey="label"
                         cx="50%"
-                        cy="44%"
-                        outerRadius="65%"
+                        cy="50%"
+                        outerRadius="62%"
                         label={pieLabel}
                         labelLine={{ stroke: c.line }}
-                        style={{ fontSize: 11 }}
                         stroke={c.surface}
                         strokeWidth={2}
                         isAnimationActive={false}
                       >
                         {activityPie.map((d) => (<Cell key={d.id} fill={d.color} />))}
                       </Pie>
-                      <Legend verticalAlign="bottom" wrapperStyle={legendStyle} />
-                      <Tooltip {...tooltipProps} formatter={(v, name) => [t('stats.times', { n: v }), name]} />
+                      <Tooltip {...tooltipProps} formatter={pieTooltip(activityTotal)} />
                     </PieChart>
                   </ResponsiveContainer>
-                </ChartCard>
-              )}
+                ) : (
+                  <p className="t-body-medium text-on-surface-variant text-center h-full flex items-center justify-center">{t('stats.noData')}</p>
+                )}
+              </ChartCard>
             </div>
           )}
         </>
@@ -261,29 +217,55 @@ export default function Statistics() {
   )
 }
 
-// Mọi thẻ biểu đồ cùng chiều cao (h-72) để lưới trên màn hình lớn luôn cân đối; thẻ `wide` chiếm cả hai cột.
-function ChartCard({ title, children, footer, wide }) {
+function ChartCard({ title, children, footer }) {
   return (
-    <section className={`mb-8 lg:mb-0 min-w-0 ${wide ? 'lg:col-span-2' : ''}`}>
+    <section className="mb-8 lg:mb-0 min-w-0">
       <p className="t-title-medium mb-2 px-1">{title}</p>
-      <div className={`w-full h-64 md:h-72 ${wide ? 'lg:h-80' : ''} card-filled p-2`}>{children}</div>
+      <div className="w-full h-80 md:h-96 card-filled p-2">{children}</div>
       {footer}
     </section>
   )
 }
 
+// Chú thích dạng thanh tiến độ: emoji + tên + số lần + %, thanh tô theo màu của lát tròn.
 function LegendList({ items, color }) {
   const total = items.reduce((a, i) => a + i.count, 0) || 1
   return (
-    <div className="flex flex-wrap gap-2 mt-3">
-      {items.map((it) => (
-        <span key={it.key || it.id} className="chip chip-static !h-8 !px-3 !gap-1.5">
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: it.color || color }} />
-          {it.emoji} {it.label}
-          <span className="text-on-surface-variant">· {it.count} ({Math.round((it.count / total) * 100)}%)</span>
-        </span>
-      ))}
-    </div>
+    <ul className="card-filled mt-3 p-4 space-y-3.5">
+      {items.map((it) => {
+        const pct = (it.count / total) * 100
+        const barColor = it.color || color
+        return (
+          <li key={it.key || it.id} className="min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: barColor }} />
+              <span className="text-base leading-none shrink-0">{it.emoji}</span>
+              <span className="t-body-medium flex-1 min-w-0 truncate">{it.label}</span>
+              <span className="t-body-small text-on-surface-variant shrink-0 tabular-nums">{it.count}</span>
+              <span className="t-label-large shrink-0 w-11 text-right tabular-nums">{Math.round(pct)}%</span>
+            </div>
+            <div
+              className="h-2 rounded-full overflow-hidden"
+              style={{ background: 'rgba(128,128,128,.22)' }}
+              role="progressbar"
+              aria-valuenow={Math.round(pct)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={it.label}
+            >
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${pct}%`,
+                  background: barColor,
+                  transition: 'width .5s cubic-bezier(.2,0,0,1)',
+                }}
+              />
+            </div>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 

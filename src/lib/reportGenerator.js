@@ -1,10 +1,8 @@
-import { moodByKey } from './moodConfig'
 import { getReportAccent } from './theme'
 
 // Dựng DOM báo cáo rồi chụp lại bằng html2canvas (giữ nguyên font chữ vì được render dưới dạng ảnh).
 // Dùng chung cho xuất PDF và xuất ảnh PNG. `i18n` = { t, locale } từ useI18n().
-// Báo cáo chứa đủ mọi số liệu và biểu đồ của trang Thống kê:
-// 4 chỉ số, xu hướng theo thời gian, phân bố cảm xúc, tỷ lệ cảm xúc (tròn), hoạt động nổi bật, tỷ lệ hoạt động (tròn).
+// Báo cáo gồm: 4 chỉ số + biểu đồ tròn cảm xúc (%) + biểu đồ tròn hoạt động (%), chú thích dạng progress bar.
 const PAGE_W = 794 // ~A4 @ 96dpi
 const PAGE_H = 1123
 const PAGE_MARGIN_Y = 32
@@ -12,7 +10,7 @@ const PAGE_MARGIN_Y = 32
 const esc = (v) =>
   String(v ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch])
 
-async function buildReport({ periodLabel, stats, distribution, timeSeries, activityStats = [], activityPie = [], i18n }) {
+async function buildReport({ periodLabel, stats, distribution, activityPie = [], i18n }) {
   const { t, locale } = i18n
   const accent = getReportAccent()
   const { default: html2canvas } = await import('html2canvas')
@@ -34,11 +32,12 @@ async function buildReport({ periodLabel, stats, distribution, timeSeries, activ
   node.style.color = '#191C20'
   node.style.fontFamily = "Roboto, 'Segoe UI', Arial, sans-serif"
 
-  const totalCount = distribution.reduce((a, d) => a + d.count, 0) || 1
   const h = (text) => `<div style="font-size:14px; font-weight:700; color:${accent}; margin-bottom:12px;">${esc(text)}</div>`
+  // Mỗi khối (và từng dòng chú thích) mang data-blk để PDF ngắt trang giữa các khối, không cắt ngang nội dung.
   const block = (inner, mb = 28) => `<div data-blk style="margin-bottom:${mb}px;">${inner}</div>`
 
-  const activityBars = activityStats.map((a) => ({ ...a, color: activityPie.find((p) => p.id === a.id)?.color || accent }))
+  const moodTotal = distribution.reduce((a, d) => a + d.count, 0) || 1
+  const activityTotal = activityPie.reduce((a, d) => a + d.count, 0) || 1
 
   node.innerHTML =
     block(
@@ -59,19 +58,11 @@ async function buildReport({ periodLabel, stats, distribution, timeSeries, activ
         ${statCard(t('stats.topMood'), stats.topMood ? stats.topMood.emoji + ' ' + stats.topMood.label : '—')}
       </div>`
     ) +
-    block(`${h(`${t('report.trend')} (${periodLabel})`)}${trendChart(timeSeries, accent)}`) +
-    block(`${h(t('stats.distribution'))}${columnChart(distribution, { max: 5 })}${legendList(distribution, totalCount)}`) +
-    block(`${h(t('stats.share'))}${pieSection(distribution, totalCount)}`) +
-    (activityStats.length
-      ? block(
-          `${h(`${t('stats.activities')} (${periodLabel})`)}${columnChart(activityBars, { max: 5 })}${legendList(
-            activityBars,
-            activityStats.reduce((a, d) => a + d.count, 0) || 1
-          )}`
-        )
-      : '') +
+    block(`${h(`${t('stats.share')} (${periodLabel})`)}${pieChart(distribution, moodTotal)}`, 8) +
+    barList(distribution, moodTotal, accent) +
     (activityPie.length
-      ? block(`${h(`${t('stats.activitiesShare')} (${periodLabel})`)}${pieSection(activityPie, activityPie.reduce((a, d) => a + d.count, 0) || 1)}`)
+      ? block(`${h(`${t('stats.activitiesShare')} (${periodLabel})`)}${pieChart(activityPie, activityTotal)}`, 8) +
+      barList(activityPie, activityTotal, accent)
       : '') +
     block(
       `<div style="font-size:10px; color:#74777F; text-align:center; border-top:1px solid #C4C6D0; padding:12px 0 40px;">${esc(t('report.footer'))}</div>`,
@@ -80,7 +71,6 @@ async function buildReport({ periodLabel, stats, distribution, timeSeries, activ
 
   document.body.appendChild(node)
   try {
-    // Vị trí đầu mỗi khối (px CSS) để PDF ngắt trang giữa các khối, không cắt ngang biểu đồ.
     const blockTops = [...node.querySelectorAll('[data-blk]')].map((el) => el.offsetTop)
     const totalHeight = node.offsetHeight
     const canvas = await html2canvas(node, { scale: 2, backgroundColor: '#FFFFFF' })
@@ -152,115 +142,74 @@ function statCard(label, value) {
   `
 }
 
-function moodColor(avg) {
-  const rounded = Math.round(avg)
-  const m = moodByKey(['angry', 'sad', 'okay', 'good', 'great'][rounded - 1] || 'okay')
-  return m ? m.color : '#9FB8C8'
-}
-
-// Xu hướng mood theo thời gian: cột + trục Y (0–5) có đường lưới + nhãn trục X (thưa bớt khi nhiều điểm).
-function trendChart(series, accent) {
-  const H = 140
-  const step = series.length > 20 ? Math.ceil(series.length / 12) : 1
-  const grid = [5, 4, 3, 2, 1, 0]
-    .map(
-      (v) => `<div style="position:absolute; left:0; right:0; top:${((5 - v) / 5) * H}px; border-top:1px ${v === 0 ? 'solid #C4C6D0' : 'dashed #E2E2E9'};"></div>
-      <div style="position:absolute; left:-22px; top:${((5 - v) / 5) * H - 6}px; width:16px; text-align:right; font-size:9px; color:#74777F;">${v}</div>`
-    )
-    .join('')
-  return `
-    <div style="padding-left:24px;">
-      <div style="position:relative; height:${H}px;">
-        ${grid}
-        <div style="position:absolute; inset:0; display:flex; align-items:flex-end; gap:4px; padding:0 4px;">
-          ${series
-            .map(
-              (p) => `<div style="flex:1 1 0; min-width:0; display:flex; justify-content:center; align-items:flex-end; height:100%;">
-                <div style="width:100%; max-width:22px; border-radius:3px 3px 0 0; background:${p.avg ? moodColor(p.avg) : 'transparent'}; height:${p.avg ? (p.avg / 5) * H : 0}px;"></div>
-              </div>`
-            )
-            .join('')}
-        </div>
-      </div>
-      <div style="display:flex; gap:4px; padding:4px 4px 0; margin-bottom:6px;">
-        ${series.map((p, i) => `<div style="flex:1 1 0; min-width:0; text-align:center; font-size:8px; color:#74777F; white-space:nowrap;">${i % step === 0 ? esc(p.label) : ''}</div>`).join('')}
-      </div>
-      <div style="display:flex; align-items:center; gap:6px; font-size:10px; color:#44474E;">
-        <span style="width:10px; height:10px; border-radius:2px; background:${accent};"></span>Mood (0–5)
-      </div>
-    </div>`
-}
-
-// Biểu đồ cột: emoji + nhãn dưới cột, số lần trên đầu cột.
-function columnChart(items, { color } = {}) {
-  const H = 130
-  const max = Math.max(1, ...items.map((d) => d.count))
-  return `
-    <div style="display:flex; align-items:flex-end; gap:10px; height:${H + 22}px; border-bottom:1px solid #C4C6D0; padding:0 4px;">
-      ${items
-        .map(
-          (d) => `<div style="flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;">
-            <div style="font-size:10px; line-height:12px; height:12px; color:#44474E; margin-bottom:4px;">${d.count}</div>
-            <div style="width:100%; max-width:44px; border-radius:4px 4px 0 0; background:${d.color || color || '#6250D6'}; height:${Math.max(2, (d.count / max) * H)}px;"></div>
-          </div>`
-        )
-        .join('')}
-    </div>
-    <div style="display:flex; gap:10px; padding:4px 4px 0; margin-bottom:10px;">
-      ${items
-        .map(
-          (d) => `<div style="flex:1 1 0; min-width:0; text-align:center;">
-            <div style="font-size:16px; line-height:22px; height:22px;">${esc(d.emoji)}</div>
-            <div style="font-size:9px; line-height:14px; height:14px; color:#74777F; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(d.label)}</div>
-          </div>`
-        )
-        .join('')}
-    </div>`
-}
-
-function legendList(items, total) {
-  return `<div style="display:flex; flex-wrap:wrap; gap:6px 14px; font-size:11px; color:#44474E;">
-    ${items
-      .map(
-        (d) => `<span style="display:inline-flex; align-items:center; gap:5px;">
-          <span style="width:9px; height:9px; border-radius:50%; background:${d.color || '#6250D6'};"></span>
-          ${esc(d.emoji)} ${esc(d.label)} · ${d.count} (${Math.round((d.count / total) * 100)}%)
-        </span>`
-      )
-      .join('')}
-  </div>`
-}
-
-// Biểu đồ tròn dạng SVG nội tuyến (html2canvas vẽ SVG ổn định, không dùng conic-gradient) + chú thích bên cạnh.
-function pieSection(items, total) {
+// Biểu đồ tròn SVG + nhãn emoji/% đặt quanh lát bằng HTML (html2canvas vẽ emoji trong HTML ổn định hơn trong SVG).
+// Lát nhỏ hơn 3% chỉ hiện emoji để các nhãn không chồng nhau.
+function pieChart(items, total) {
   const data = items.filter((d) => d.count > 0)
   if (!data.length) return ''
-  const R = 80
-  const C = 90
+  const W = 460
+  const H = 270
+  const CX = W / 2
+  const CY = H / 2
+  const R = 88
+  const LABEL_W = 64
   let angle = -Math.PI / 2
-  const slices = data.map((d) => {
+
+  const slices = []
+  const labels = []
+  for (const d of data) {
     const frac = d.count / total
-    if (frac >= 0.9999) return `<circle cx="${C}" cy="${C}" r="${R}" fill="${d.color}" />`
     const a0 = angle
     const a1 = angle + frac * Math.PI * 2
     angle = a1
-    const [x0, y0] = [C + R * Math.cos(a0), C + R * Math.sin(a0)]
-    const [x1, y1] = [C + R * Math.cos(a1), C + R * Math.sin(a1)]
-    return `<path d="M${C} ${C} L${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${frac > 0.5 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z" fill="${d.color}" stroke="#FFFFFF" stroke-width="2" />`
-  })
-  const legend = data
-    .map(
-      (d) => `
-      <div style="position:relative; padding-left:18px; font-size:12px; line-height:20px; margin:6px 0;">
-        <span style="position:absolute; left:0; top:5px; width:10px; height:10px; border-radius:50%; background:${d.color};"></span>
-        <span style="float:right; color:#44474E;">${d.count} (${Math.round((d.count / total) * 100)}%)</span>
-        <span>${esc(d.emoji)} ${esc(d.label)}</span>
-      </div>`
+    if (frac >= 0.9999) {
+      slices.push(`<circle cx="${CX}" cy="${CY}" r="${R}" fill="${d.color}" stroke="#FFFFFF" stroke-width="2" />`)
+    } else {
+      const [x0, y0] = [CX + R * Math.cos(a0), CY + R * Math.sin(a0)]
+      const [x1, y1] = [CX + R * Math.cos(a1), CY + R * Math.sin(a1)]
+      slices.push(
+        `<path d="M${CX} ${CY} L${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${frac > 0.5 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z" fill="${d.color}" stroke="#FFFFFF" stroke-width="2" />`
+      )
+    }
+    const mid = (a0 + a1) / 2
+    const lx = CX + (R + 22) * Math.cos(mid)
+    const ly = CY + (R + 22) * Math.sin(mid)
+    const right = Math.cos(mid) >= 0
+    const text = frac < 0.03 ? d.emoji : `${d.emoji} ${Math.round(frac * 100)}%`
+    labels.push(
+      `<div style="position:absolute; left:${(right ? lx : lx - LABEL_W).toFixed(1)}px; top:${(ly - 9).toFixed(1)}px; width:${LABEL_W}px; height:18px; line-height:18px; font-size:12px; color:#191C20; white-space:nowrap; text-align:${right ? 'left' : 'right'};">${esc(text)}</div>`
     )
-    .join('')
+  }
+
   return `
-    <div style="display:flex; align-items:center; gap:36px;">
-      <svg width="180" height="180" viewBox="0 0 180 180" style="flex:none;">${slices.join('')}</svg>
-      <div style="flex:1;">${legend}</div>
+    <div style="position:relative; width:${W}px; height:${H}px; margin:0 auto;">
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute; left:0; top:0;">${slices.join('')}</svg>
+      ${labels.join('')}
     </div>`
+}
+
+// Chú thích dạng progress bar: chấm màu + emoji + tên + số lần + %, thanh tô theo màu lát tròn.
+// Mỗi dòng cao cố định (ROW_H), mọi phần tử đặt tuyệt đối với line-height = ROW_H để html2canvas
+// không tính lệch vị trí theo chiều dọc. Mỗi dòng là một khối riêng (data-blk) để ngắt trang gọn.
+function barList(items, total, fallback) {
+  const ROW_H = 24
+  return items
+    .map((d, i) => {
+      const pct = (d.count / total) * 100
+      const color = d.color || fallback
+      const last = i === items.length - 1
+      return `<div data-blk style="margin-bottom:${last ? 28 : 12}px;">
+        <div style="position:relative; height:${ROW_H}px; margin-bottom:4px;">
+          <span style="position:absolute; left:0; top:${(ROW_H - 10) / 2}px; width:10px; height:10px; border-radius:50%; background:${color};"></span>
+          <span style="position:absolute; left:20px; top:0; width:24px; height:${ROW_H}px; line-height:${ROW_H}px; font-size:15px; text-align:center;">${esc(d.emoji)}</span>
+          <span style="position:absolute; left:52px; right:90px; top:0; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(d.label)}</span>
+          <span style="position:absolute; right:48px; top:0; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; color:#74777F; text-align:right;">${d.count}</span>
+          <span style="position:absolute; right:0; top:0; width:40px; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; font-weight:700; text-align:right;">${Math.round(pct)}%</span>
+        </div>
+        <div style="height:8px; border-radius:4px; background:#E2E2E9; overflow:hidden;">
+          <div style="height:8px; width:${pct.toFixed(2)}%; border-radius:4px; background:${color};"></div>
+        </div>
+      </div>`
+    })
+    .join('')
 }

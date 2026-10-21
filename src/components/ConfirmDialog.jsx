@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { AlertTriangle, HelpCircle, Loader2 } from './icons'
 import { useI18n } from '../i18n'
 
-// Dialog xác nhận (M3 basic dialog có icon): icon + tiêu đề canh giữa, nút văn bản căn phải.
+// Dialog xác nhận: icon + tiêu đề canh giữa, nút căn phải.
 export default function ConfirmDialog({ open, title, description, confirmLabel, danger, onConfirm, onCancel }) {
   const { t } = useI18n()
   const [submitting, setSubmitting] = useState(false)
@@ -38,9 +38,9 @@ export default function ConfirmDialog({ open, title, description, confirmLabel, 
         aria-modal="true"
         aria-label={title}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm bg-surface-container-high rounded-m3-xl p-6 pop-in shadow-elev-3"
+        className="w-full max-w-sm bg-popover text-popover-foreground border border-outline-variant rounded-xl p-6 pop-in shadow-elev-4"
       >
-        <Icon size={24} className={`mx-auto mb-4 ${danger ? 'text-error' : 'text-secondary-icon text-primary'}`} />
+        <Icon size={28} className={`mx-auto mb-4 ${danger ? 'text-error' : 'text-brand'}`} />
         <p className="t-headline-small text-center mb-4">{title}</p>
         {description && <p className="t-body-medium text-on-surface-variant mb-6">{description}</p>}
         <div className="flex justify-end gap-2">

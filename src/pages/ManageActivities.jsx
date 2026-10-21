@@ -175,13 +175,13 @@ export default function ManageActivities() {
 
       <div className="md:flex md:items-center md:gap-4 mb-6 space-y-3 md:space-y-0">
         <div className="relative flex-1">
-          <Search size={24} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('manageActs.searchPlaceholder')}
             aria-label={t('manageActs.search')}
-            className="w-full h-14 rounded-full bg-surface-container-high pl-14 pr-12 t-body-large focus:outline-none focus:ring-2 focus:ring-primary"
+            className="field-input has-leading pr-12"
           />
           {search && (
             <button onClick={() => setSearch('')} aria-label={t('manageActs.clearSearch')} className="icon-btn state absolute right-1 top-1/2 -translate-y-1/2">
@@ -236,7 +236,7 @@ export default function ManageActivities() {
             style={{ zIndex: dragActiveIndex === i ? 10 : 'auto' }}
           >
             <SwipeableRow onEdit={() => openEdit(a)} onDelete={() => setPendingDelete(a)}>
-              <div className={`flex items-center gap-2 rounded-m3-md px-2 py-2 transition-shadow ${dragActiveIndex === i ? 'shadow-elev-3 bg-surface-container-high' : 'bg-surface-container-highest'}`}>
+              <div className={`flex items-center gap-2 rounded-md px-2 py-2 transition-shadow ${dragActiveIndex === i ? 'shadow-elev-3 bg-surface-container-high' : 'bg-surface border border-outline-variant'}`}>
                 {canReorder ? (
                   <span
                     onPointerDown={(e) => handleGripPointerDown(e, i)}

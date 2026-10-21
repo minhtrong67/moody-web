@@ -63,7 +63,7 @@ export default function CalendarPage() {
               className="aspect-square rounded-full flex flex-col items-center justify-center text-xs gap-0.5"
               style={{
                 background: m ? m.color + '33' : 'transparent',
-                border: selected === iso ? '2px solid rgb(var(--md-primary))' : '1px solid transparent'
+                border: selected === iso ? '2px solid var(--c-brand)' : '1px solid transparent'
               }}
             >
               <span>{m ? m.emoji : d}</span>
@@ -77,7 +77,7 @@ export default function CalendarPage() {
         <div className="mt-6 card-filled p-4">
           <div className="flex items-center justify-between mb-1">
             <p className="font-medium">{moodByKey(selectedEntry.mood)?.emoji} {moodByKey(selectedEntry.mood)?.label} · {selected}</p>
-            <Link to={`/checkin/${selectedEntry.id}`} className="text-xs text-primary shrink-0">Sửa</Link>
+            <Link to={`/checkin/${selectedEntry.id}`} className="text-xs text-brand shrink-0">Sửa</Link>
           </div>
           {selectedEntry.note && <p className="text-sm text-on-surface-variant mb-2">{selectedEntry.note}</p>}
           {(selectedEntry.activities?.length > 0) && (

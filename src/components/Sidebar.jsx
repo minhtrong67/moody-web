@@ -23,17 +23,18 @@ function DrawerBody({ onNavigate }) {
   const navigate = useNavigate()
   return (
     <>
-      <div className="flex items-center gap-3 px-7 h-[4.5rem] shrink-0">
+      <div className="flex items-center gap-2.5 px-5 h-16 shrink-0">
+        <img src="/icons/icon-192.png" alt="" width="28" height="28" className="w-7 h-7 rounded-md" />
         <span className="t-title-large">Moody</span>
       </div>
 
       {/* Extended FAB — chỉ hiện ở drawer cố định (màn hình lớn) */}
-      <div className="px-4 pb-4 hidden lg:block">
+      <div className="px-3 pb-3 hidden lg:block">
         <button
           onClick={() => navigate('/checkin')}
-          className="state h-14 px-5 rounded-m3-lg bg-primary-container text-on-primary-container shadow-elev-1 hover:shadow-elev-2 flex items-center gap-3 t-label-large transition-shadow"
+          className="btn btn-filled btn-lg state w-full justify-start gap-2"
         >
-          <Plus size={24} />
+          <Plus size={18} />
           {t('nav.newCheckin')}
         </button>
       </div>
@@ -42,15 +43,15 @@ function DrawerBody({ onNavigate }) {
         {NAV_MAIN.map((l) => (
           <DrawerLink key={l.to} {...l} label={t(l.key)} onClick={onNavigate} />
         ))}
-        <div className="h-px bg-outline-variant mx-4 my-3" />
-        <p className="t-title-small text-on-surface-variant px-4 h-12 flex items-center">{t('nav.manage')}</p>
+        <div className="h-px bg-outline-variant mx-3 my-3" />
+        <p className="t-label-medium text-on-surface-variant px-3 h-8 flex items-center">{t('nav.manage')}</p>
         {NAV_MANAGE.map((l) => (
           <DrawerLink key={l.to} {...l} label={t(l.key)} onClick={onNavigate} />
         ))}
       </nav>
 
       {user ? (
-        <div className="mx-3 mb-3 p-3 rounded-m3-lg bg-surface-container flex items-center gap-3 shrink-0">
+        <div className="mx-3 mb-3 p-3 rounded-lg border border-outline-variant flex items-center gap-3 shrink-0">
           {user.photoURL && (
             <img src={user.photoURL} alt="" width="40" height="40" className="w-10 h-10 rounded-full shrink-0" referrerPolicy="no-referrer" />
           )}
@@ -63,7 +64,7 @@ function DrawerBody({ onNavigate }) {
           </button>
         </div>
       ) : (
-        <div className="px-7 py-4 t-label-medium text-on-surface-variant shrink-0">{t('nav.tagline')}</div>
+        <div className="px-5 py-4 t-label-medium text-on-surface-variant shrink-0">{t('nav.tagline')}</div>
       )}
     </>
   )
@@ -76,12 +77,11 @@ function DrawerLink({ to, label, icon: Icon, end, onClick }) {
       end={end}
       onClick={onClick}
       className={({ isActive }) =>
-        `state flex items-center gap-3 h-14 pl-4 pr-6 rounded-full t-label-large ${
-          isActive ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant'
+        `state flex items-center gap-3 h-10 px-3 rounded-md t-label-large ${isActive ? 'bg-surface-container text-on-surface' : 'text-on-surface-variant'
         }`
       }
     >
-      <Icon size={24} />
+      <Icon size={20} />
       {label}
     </NavLink>
   )
@@ -106,9 +106,8 @@ export function ModalDrawer({ open, onClose }) {
       <aside
         aria-hidden={!open}
         inert={!open ? '' : undefined}
-        className={`fixed top-0 left-0 z-50 h-full w-[22.5rem] max-w-[85vw] bg-surface-container-low rounded-r-m3-xl flex flex-col transition-transform duration-300 ease-emphasized will-change-transform ${
-          open ? 'translate-x-0 shadow-elev-3' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 z-50 h-full w-[19rem] max-w-[85vw] card-filled border-r border-outline-variant flex flex-col transition-transform duration-300 ease-emphasized will-change-transform ${open ? 'translate-x-0 shadow-elev-4' : '-translate-x-full'
+          }`}
         style={{ paddingTop: 'var(--safe-top)' }}
       >
         <DrawerBody onNavigate={onClose} />
@@ -120,7 +119,7 @@ export function ModalDrawer({ open, onClose }) {
 // Standard navigation drawer cố định (laptop / PC, ≥ 1024px).
 export function PermanentDrawer() {
   return (
-    <aside className="hidden lg:flex flex-col w-[17.5rem] shrink-0 sticky top-0 h-[100dvh] bg-surface-container-low border-r border-outline-variant/40">
+    <aside className="hidden lg:flex flex-col w-[16rem] shrink-0 sticky top-0 h-[100dvh] bg-surface-container-low border-r border-outline-variant">
       <DrawerBody />
     </aside>
   )
@@ -132,13 +131,13 @@ export function NavRail() {
   const navigate = useNavigate()
   const items = [...NAV_MAIN, ...NAV_MANAGE]
   return (
-    <aside className="hidden md:flex lg:hidden flex-col items-center w-20 shrink-0 sticky top-0 h-[100dvh] bg-surface py-4 gap-1 overflow-y-auto no-scrollbar border-r border-outline-variant/40">
+    <aside className="hidden md:flex lg:hidden flex-col items-center w-20 shrink-0 sticky top-0 h-[100dvh] bg-surface py-4 gap-1 overflow-y-auto no-scrollbar border-r border-outline-variant">
       <button
         onClick={() => navigate('/checkin')}
         aria-label={t('nav.newCheckin')}
-        className="state w-14 h-14 mb-4 rounded-m3-lg bg-primary-container text-on-primary-container shadow-elev-1 hover:shadow-elev-2 flex items-center justify-center shrink-0 transition-shadow"
+        className="state w-11 h-11 mb-4 rounded-md bg-primary text-on-primary flex items-center justify-center shrink-0"
       >
-        <Plus size={24} />
+        <Plus size={20} />
       </button>
       {items.map((l, i) => (
         <div key={l.to} className="w-full">
@@ -147,13 +146,12 @@ export function NavRail() {
             {({ isActive }) => (
               <>
                 <span
-                  className={`state flex items-center justify-center w-14 h-8 rounded-full transition-colors duration-200 ${
-                    isActive ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant'
-                  }`}
+                  className={`state flex items-center justify-center w-12 h-9 rounded-md transition-colors duration-200 ${isActive ? 'bg-surface-container text-on-surface' : 'text-on-surface-variant'
+                    }`}
                 >
-                  <l.icon size={24} />
+                  <l.icon size={20} />
                 </span>
-                <span className={`t-label-medium text-center px-1 ${isActive ? 'text-on-surface font-bold' : 'text-on-surface-variant'}`}>
+                <span className={`t-label-small text-center px-1 ${isActive ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                   {t(l.shortKey || l.key)}
                 </span>
               </>

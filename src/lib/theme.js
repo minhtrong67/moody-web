@@ -1,22 +1,15 @@
-// Quản lý giao diện: chế độ sáng/tối, cỡ chữ và MÀU CHỦ ĐỀ (seed color → bảng màu Material 3).
+// Quản lý giao diện: chế độ sáng/tối/hệ thống và cỡ chữ.
+// Bảng màu nằm trong src/styles/theme.css (teal-zinc); chế độ tối bật bằng class `.dark` trên <html>.
 const THEME_KEY = 'theme'
 const FONT_KEY = 'fontScale'
-const SEED_KEY = 'themeSeed' // hex "#RRGGBB" hoặc rỗng = màu mặc định
-const CSS_KEY = 'themeCss' // CSS đã sinh, để index.html áp ngay trước khi React chạy (không nháy màu)
 
-export const DEFAULT_SEED = '#769CDF'
-
-// Các màu gợi ý hiển thị trong Cài đặt (key dùng cho i18n: theme.color.<key>).
-export const SEED_PRESETS = [
-  { key: 'blue', hex: DEFAULT_SEED },
-  { key: 'teal', hex: '#009688' },
-  { key: 'green', hex: '#5BAA5B' },
-  { key: 'yellow', hex: '#D9A400' },
-  { key: 'orange', hex: '#E8743B' },
-  { key: 'red', hex: '#D9534F' },
-  { key: 'pink', hex: '#D86AA8' },
-  { key: 'purple', hex: '#8E6FD8' }
-]
+// Màu nền dùng cho thanh trạng thái / splash của PWA. PHẢI khớp --background trong theme.css:
+//   sáng  oklch(1 0 0)                    → #ffffff
+//   tối   oklch(0.141 0.005 285.823)      → #09090b
+// (index.html có bản sao của hai giá trị này để chạy trước khi tải JS.)
+export const PWA_COLORS = { light: '#ffffff', dark: '#09090b' }
+// Màu nhấn dùng cho báo cáo PDF/PNG (nền trắng): --primary của theme sáng, oklch(0.511 0.096 186.391).
+export const REPORT_ACCENT = '#00786f'
 
 const VALID_THEMES = ['light', 'dark', 'system']
 
@@ -48,40 +41,56 @@ export function getStoredFontScale() {
   return ['0.9', '1', '1.15'].includes(v) ? v : '1'
 }
 
-export function getStoredSeed() {
-  const v = read(SEED_KEY)
-  return v && /^#[0-9a-f]{6}$/i.test(v) ? v.toUpperCase() : DEFAULT_SEED
-}
-
 export function isDarkNow() {
   return document.documentElement.classList.contains('dark')
 }
 
-// Đọc một "color role" đang áp dụng (vd 'primary') thành #hex — dùng cho biểu đồ SVG.
+// Đọc một "vai trò màu" đang áp dụng (vd 'primary', 'on-surface') thành #hex — dùng cho biểu đồ SVG.
+// Màu trong theme là oklch/color-mix nên cho trình duyệt tự quy đổi qua canvas thay vì tự tính.
+let probe
+let ctx
 export function readRole(name) {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(`--md-${name}`).trim()
-  const [r, g, b] = raw.split(/\s+/).map(Number)
-  if ([r, g, b].some((n) => Number.isNaN(n))) return '#000000'
-  return '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('')
+  try {
+    if (!probe) {
+      probe = document.createElement('span')
+      probe.style.display = 'none'
+      document.body.appendChild(probe)
+      ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    }
+    probe.style.color = `var(--c-${name})`
+    const resolved = getComputedStyle(probe).color
+    ctx.clearRect(0, 0, 1, 1)
+    ctx.fillStyle = '#000'
+    ctx.fillStyle = resolved
+    ctx.fillRect(0, 0, 1, 1)
+    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+    return '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('')
+  } catch {
+    return '#000000'
+  }
 }
 
-function syncMetaThemeColor() {
-  const meta = document.querySelector('meta[name="theme-color"]:not([media])') || document.querySelector('meta[name="theme-color"]')
-  if (!meta) return
-  const [r, g, b] = getComputedStyle(document.documentElement)
-    .getPropertyValue('--md-surface')
-    .trim()
-    .split(/\s+/)
-    .map(Number)
-  if (![r, g, b].some(Number.isNaN)) meta.setAttribute('content', `rgb(${r}, ${g}, ${b})`)
+// Đồng bộ phần "vỏ" của PWA với theme đang dùng:
+//  • <meta theme-color>   → thanh trạng thái / thanh tiêu đề
+//  • <link rel=manifest>  → manifest sáng hoặc tối; Android lấy background_color của manifest làm màu
+//    splash lúc mở app. Manifest chỉ nhận một màu nên ta đổi cả file manifest theo theme (xem public/).
+export function syncPwaChrome(dark = isDarkNow()) {
+  const color = dark ? PWA_COLORS.dark : PWA_COLORS.light
+  const meta = document.querySelector('meta[name="theme-color"]')
+  if (meta) {
+    meta.removeAttribute('media')
+    meta.setAttribute('content', color)
+  }
+  const link = document.querySelector('link[rel="manifest"]')
+  const href = dark ? '/manifest-dark.webmanifest' : '/manifest.webmanifest'
+  if (link && link.getAttribute('href') !== href) link.setAttribute('href', href)
 }
 
 export function applyTheme(theme) {
   const isDark =
     theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
   document.documentElement.classList.toggle('dark', isDark)
-  // Đồng bộ màu thanh trạng thái / thanh tiêu đề của app PWA với theme đang dùng.
-  syncMetaThemeColor()
+  syncPwaChrome(isDark)
 }
 
 export function setTheme(theme) {
@@ -99,81 +108,16 @@ export function setFontScale(scale) {
   applyFontScale(scale)
 }
 
-// ---------- Màu chủ đề ----------
-const ROLE_MAP = {
-  primary: 'primary', 'on-primary': 'onPrimary', 'primary-container': 'primaryContainer',
-  'on-primary-container': 'onPrimaryContainer', secondary: 'secondary', 'on-secondary': 'onSecondary',
-  'secondary-container': 'secondaryContainer', 'on-secondary-container': 'onSecondaryContainer',
-  tertiary: 'tertiary', 'on-tertiary': 'onTertiary', 'tertiary-container': 'tertiaryContainer',
-  'on-tertiary-container': 'onTertiaryContainer', error: 'error', 'on-error': 'onError',
-  'error-container': 'errorContainer', 'on-error-container': 'onErrorContainer', surface: 'surface',
-  'surface-dim': 'surfaceDim', 'surface-container-lowest': 'surfaceContainerLowest',
-  'surface-container-low': 'surfaceContainerLow', 'surface-container': 'surfaceContainer',
-  'surface-container-high': 'surfaceContainerHigh', 'surface-container-highest': 'surfaceContainerHighest',
-  'on-surface': 'onSurface', 'on-surface-variant': 'onSurfaceVariant', outline: 'outline',
-  'outline-variant': 'outlineVariant', 'inverse-surface': 'inverseSurface',
-  'inverse-on-surface': 'inverseOnSurface', 'inverse-primary': 'inversePrimary'
-}
-
-// Sinh bảng màu M3 (Tonal Spot — giống Material Theme Builder) từ seed. Thư viện chỉ nạp khi cần.
-export async function generateSchemeCss(seedHex) {
-  const mcu = await import('@material/material-color-utilities')
-  const { argbFromHex, Hct, SchemeTonalSpot, MaterialDynamicColors: M } = mcu
-  const source = Hct.fromInt(argbFromHex(seedHex))
-  const block = (dark) => {
-    const scheme = new SchemeTonalSpot(source, dark, 0)
-    return Object.entries(ROLE_MAP)
-      .map(([cssName, key]) => {
-        const argb = M[key].getArgb(scheme)
-        return `--md-${cssName}:${(argb >> 16) & 255} ${(argb >> 8) & 255} ${argb & 255};`
-      })
-      .join('')
-  }
-  return `:root{${block(false)}}html.dark{${block(true)}}`
-}
-
 export function getReportAccent() {
-  // Màu nhấn của báo cáo (nền trắng) — luôn là primary của bảng màu sáng.
-  const css = read(CSS_KEY)
-  const m = css && css.match(/^:root\{[^}]*--md-primary:(\d+) (\d+) (\d+);/)
-  if (!m) return '#415F91'
-  return '#' + [m[1], m[2], m[3]].map((n) => Number(n).toString(16).padStart(2, '0')).join('')
-}
-
-function injectCss(css) {
-  let el = document.getElementById('md-theme-override')
-  if (!css) {
-    el?.remove()
-    return
-  }
-  if (!el) {
-    el = document.createElement('style')
-    el.id = 'md-theme-override'
-    document.head.appendChild(el)
-  }
-  el.textContent = css
-}
-
-// seed === DEFAULT_SEED → dùng đúng bảng màu tĩnh trong index.css (không cần override).
-export async function setThemeSeed(seedHex) {
-  const hex = seedHex.toUpperCase()
-  if (hex === DEFAULT_SEED) {
-    write(SEED_KEY, '')
-    write(CSS_KEY, '')
-    injectCss('')
-  } else {
-    const css = await generateSchemeCss(hex)
-    write(SEED_KEY, hex)
-    write(CSS_KEY, css)
-    injectCss(css)
-  }
-  syncMetaThemeColor()
-  window.dispatchEvent(new CustomEvent('themechange'))
+  return REPORT_ACCENT
 }
 
 export function initTheme() {
-  const css = read(CSS_KEY)
-  if (css) injectCss(css)
+  // Bản cũ cho chọn "màu chủ đề" và lưu CSS sinh ra; theme giờ cố định theo theme.css nên dọn dữ liệu cũ.
+  write('themeSeed', '')
+  write('themeCss', '')
+  document.getElementById('md-theme-override')?.remove()
+
   applyTheme(getStoredTheme())
   applyFontScale(getStoredFontScale())
   const mq = window.matchMedia('(prefers-color-scheme: dark)')

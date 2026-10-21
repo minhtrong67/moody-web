@@ -1,6 +1,26 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { DEVICES, splashFile } from './scripts/splash-devices.mjs'
+
+// Chèn <link rel="apple-touch-startup-image"> (sáng + tối) cho từng kích thước iPhone/iPad.
+// iOS tự chọn ảnh theo kích thước màn hình và prefers-color-scheme → splash khớp theme của máy.
+function iosSplashLinks() {
+  const tags = DEVICES.flatMap(([w, h, dpr]) =>
+    ['light', 'dark'].map((theme) => ({
+      tag: 'link',
+      injectTo: 'head',
+      attrs: {
+        rel: 'apple-touch-startup-image',
+        href: `/${splashFile(theme, w, h, dpr)}`,
+        media:
+          `(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${dpr})` +
+          ` and (orientation: portrait) and (prefers-color-scheme: ${theme})`
+      }
+    }))
+  )
+  return { name: 'moody-ios-splash-links', transformIndexHtml: () => tags }
+}
 
 export default defineConfig({
   build: {
@@ -19,25 +39,14 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    iosSplashLinks(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'icons/*.png'],
-      manifest: {
-        name: 'Moody — Nhật ký tâm trạng',
-        short_name: 'Moody',
-        description: 'Theo dõi tâm trạng mỗi ngày, xem xu hướng và xuất báo cáo',
-        // Splash do hệ điều hành vẽ chỉ nhận MỘT màu nền cố định (manifest chưa hỗ trợ theo theme sáng/tối),
-        // nên dùng màu thương hiệu trung tính thay vì màu nền sáng gây chói khi đang dùng giao diện tối.
-        theme_color: '#009688',
-        background_color: '#009688',
-        display: 'standalone',
-        start_url: '/',
-        icons: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
-        ]
-      }
+      // Manifest tự viết, có HAI bản (public/manifest.webmanifest + manifest-dark.webmanifest).
+      // Splash của Android do hệ điều hành vẽ từ background_color của manifest và chỉ nhận MỘT màu,
+      // nên app đổi <link rel="manifest"> theo theme đang dùng (xem syncPwaChrome trong src/lib/theme.js).
+      manifest: false
     })
   ]
 })

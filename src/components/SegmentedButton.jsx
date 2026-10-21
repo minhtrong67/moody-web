@@ -1,6 +1,4 @@
-import { Check } from './icons'
-
-// Segmented button của Material Design 3: ô được chọn có nền secondary-container + dấu ✓.
+// Segmented control dạng tabs: ô được chọn nổi lên trên nền xám nhạt.
 export default function SegmentedButton({ options, value, onChange, className = '' }) {
   return (
     <div className={`segmented ${className}`} role="group">
@@ -12,9 +10,8 @@ export default function SegmentedButton({ options, value, onChange, className = 
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(o.key)}
-            className="state"
           >
-            {selected ? <Check size={16} /> : o.icon ? <o.icon size={16} /> : null}
+            {o.icon ? <o.icon size={16} /> : null}
             <span className="truncate">{o.label}</span>
           </button>
         )

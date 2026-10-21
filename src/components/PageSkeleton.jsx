@@ -40,7 +40,7 @@ export function CalendarSkeleton() {
       </div>
       <div className="grid grid-cols-7 gap-1">
         {Array.from({ length: 35 }).map((_, i) => (
-          <Skeleton key={i} className="aspect-square rounded-m3-md" />
+          <Skeleton key={i} className="aspect-square rounded-md" />
         ))}
       </div>
     </div>
@@ -67,7 +67,7 @@ export function DashboardBodySkeleton() {
     <div aria-busy="true" aria-label="Loading">
       <div className="grid grid-cols-3 gap-3 mb-9">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-[104px] rounded-m3-md" />
+          <Skeleton key={i} className="h-[104px] rounded-md" />
         ))}
       </div>
       <Skeleton className="h-4 w-20 rounded mb-3" />
@@ -82,7 +82,7 @@ export function DashboardBodySkeleton() {
       <Skeleton className="h-4 w-32 rounded mb-3" />
       <div className="space-y-2">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-[58px] rounded-m3-md" />
+          <Skeleton key={i} className="h-[58px] rounded-md" />
         ))}
       </div>
     </div>
@@ -95,20 +95,20 @@ export function StatsBodySkeleton() {
     <div aria-busy="true" aria-label="Loading">
       <div className="space-y-3 mb-8">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-[58px] rounded-m3-md" />
+          <Skeleton key={i} className="h-[58px] rounded-md" />
         ))}
       </div>
       <Skeleton className="h-4 w-40 rounded mb-2" />
-      <Skeleton className="w-full aspect-[4/3] max-h-64 rounded-m3-md mb-8" />
+      <Skeleton className="w-full aspect-[4/3] max-h-64 rounded-md mb-8" />
       <Skeleton className="h-4 w-32 rounded mb-2" />
-      <Skeleton className="w-full aspect-[4/3] max-h-64 rounded-m3-md mb-3" />
+      <Skeleton className="w-full aspect-[4/3] max-h-64 rounded-md mb-3" />
       <div className="flex flex-wrap gap-2 mb-8">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-7 w-24 rounded-full" />
         ))}
       </div>
       <Skeleton className="h-4 w-28 rounded mb-2" />
-      <Skeleton className="w-full aspect-square max-h-72 rounded-m3-md" />
+      <Skeleton className="w-full aspect-square max-h-72 rounded-md" />
     </div>
   )
 }
@@ -118,7 +118,7 @@ export function ActivityGridSkeleton() {
   return (
     <div className="flex flex-wrap gap-2" aria-busy="true" aria-label="Loading">
       {[88, 96, 80, 104, 92, 84, 100, 90, 98, 86].map((w, i) => (
-        <Skeleton key={i} className="h-8 rounded-m3-sm" style={{ width: w }} />
+        <Skeleton key={i} className="h-8 rounded-sm" style={{ width: w }} />
       ))}
     </div>
   )
@@ -162,7 +162,7 @@ export function ManageListSkeleton({ count = 6 }) {
 const VARIANTS = {
   dashboard: () => (
     <div className="page">
-      <div className="bg-primary-container/40 px-4 pt-6 pb-7 mb-6 rounded-b-m3-xl">
+      <div className="bg-primary-container/40 px-4 pt-6 pb-7 mb-6 rounded-b-xl">
         <Skeleton className="h-3 w-28 rounded mb-2" />
         <Skeleton className="h-7 w-52 rounded mb-1.5" />
         <Skeleton className="h-7 w-40 rounded mb-5" />
@@ -176,7 +176,7 @@ const VARIANTS = {
       <Skeleton className="h-7 w-44 rounded mb-4" />
       <Skeleton className="h-10 w-full rounded-full mb-5" />
       <Skeleton className="h-14 w-full rounded-full mb-3" />
-      <Skeleton className="h-14 w-full rounded-m3-md mb-4" />
+      <Skeleton className="h-14 w-full rounded-md mb-4" />
       <EntryListSkeleton />
     </div>
   ),
@@ -193,7 +193,7 @@ const VARIANTS = {
     <div className="page pt-2 pb-8">
       <Skeleton className="h-7 w-48 rounded mb-2" />
       <Skeleton className="h-3.5 w-64 rounded mb-6" />
-      <Skeleton className="h-12 w-full rounded-m3-md mb-6" />
+      <Skeleton className="h-12 w-full rounded-md mb-6" />
       <ManageListSkeleton />
     </div>
   ),
@@ -202,13 +202,13 @@ const VARIANTS = {
       <Skeleton className="h-8 w-24 rounded-full mb-5" />
       <Skeleton className="h-7 w-32 rounded mb-2" />
       <Skeleton className="h-3.5 w-48 rounded mb-5" />
-      <Skeleton className="h-14 w-full rounded-m3-md mb-6" />
+      <Skeleton className="h-14 w-full rounded-md mb-6" />
       <MoodPickerSkeleton />
       <Skeleton className="h-4 w-40 rounded mb-4" />
       <ActivityGridSkeleton />
       <Skeleton className="h-4 w-28 rounded mt-7 mb-3" />
-      <Skeleton className="h-20 w-full rounded-m3-md mb-8" />
-      <Skeleton className="h-12 w-full rounded-m3-md" />
+      <Skeleton className="h-20 w-full rounded-md mb-8" />
+      <Skeleton className="h-12 w-full rounded-md" />
     </div>
   ),
   settings: () => (

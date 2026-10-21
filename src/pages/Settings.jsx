@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Sun,
   Moon,
@@ -9,11 +9,13 @@ import {
   ChevronDown,
   LogOut,
   Heart,
+  Sparkles,
+  ChevronRight,
   Check,
-  Palette,
 } from "../components/icons";
 import SegmentedButton from "../components/SegmentedButton";
 import TextField from "../components/TextField";
+import { Link } from "react-router-dom";
 import { todayISO } from "../lib/dateUtils";
 import { START_PAGES, getStartPage, setStartPage } from "../lib/startPage";
 import {
@@ -42,12 +44,8 @@ import { useI18n, LANGUAGES } from "../i18n";
 import {
   getStoredTheme,
   getStoredFontScale,
-  getStoredSeed,
   setTheme,
   setFontScale,
-  setThemeSeed,
-  SEED_PRESETS,
-  DEFAULT_SEED,
 } from "../lib/theme";
 
 const FONT_SIZES = [
@@ -66,16 +64,12 @@ export default function Settings() {
   const { t, langPref, setLang } = useI18n();
   const [theme, setThemeState] = useState(getStoredTheme());
   const [fontScale, setFontScaleState] = useState(getStoredFontScale());
-  const [seed, setSeedState] = useState(getStoredSeed());
   const [startPage, setStartPageState] = useState(getStartPage());
   const [format, setFormat] = useSessionState("settings.format", "csv");
   const [dataOpen, setDataOpen] = useSessionState("settings.dataOpen", false);
   const [busy, setBusy] = useState(null);
   const fileRef = useRef(null);
   const importTarget = useRef(null);
-  const debounceRef = useRef(null);
-
-  useEffect(() => () => clearTimeout(debounceRef.current), []);
 
   function handleTheme(value) {
     setThemeState(value);
@@ -85,15 +79,6 @@ export default function Settings() {
   function handleFontScale(value) {
     setFontScaleState(value);
     setFontScale(value);
-  }
-
-  // Màu chủ đề: bảng màu M3 được sinh lại từ seed (nạp thư viện lười), lưu để lần sau áp ngay.
-  function handleSeed(hex, { debounce = false } = {}) {
-    setSeedState(hex.toUpperCase());
-    clearTimeout(debounceRef.current);
-    if (debounce)
-      debounceRef.current = setTimeout(() => setThemeSeed(hex), 120);
-    else setThemeSeed(hex);
   }
 
   function handleStartPage(path) {
@@ -111,15 +96,15 @@ export default function Settings() {
 
   async function exportDataset(dataset) {
     const rows = rowsFor[dataset]();
-    if (rows.length === 0) return showToast(t("settings.exportEmpty"));
+    if (rows.length === 0) return showToast(t("settings.exportEmpty"), { type: "info" });
     setBusy(`export:${dataset}`);
     try {
       const blob = await buildExportBlob(format, dataset, rows);
       const name = `moody-${dataset}-${todayISO()}.${format}`;
       downloadBlob(blob, name);
-      showToast(t("settings.exported", { name }));
+      showToast(t("settings.exported", { name }), { type: "success" });
     } catch {
-      showToast(t("settings.exportFailed"));
+      showToast(t("settings.exportFailed"), { type: "error" });
     } finally {
       setBusy(null);
     }
@@ -133,9 +118,9 @@ export default function Settings() {
       const { blob, ext } = await buildExportAllBlob(format, all);
       const name = `moody-all-${todayISO()}.${ext}`;
       downloadBlob(blob, name);
-      showToast(t("settings.exported", { name }));
+      showToast(t("settings.exported", { name }), { type: "success" });
     } catch {
-      showToast(t("settings.exportFailed"));
+      showToast(t("settings.exportFailed"), { type: "error" });
     } finally {
       setBusy(null);
     }
@@ -190,19 +175,17 @@ export default function Settings() {
       try {
         total = await importParsed(parsed);
       } catch {
-        return showToast(t("settings.importErr.write"));
+        return showToast(t("settings.importErr.write"), { type: "error" });
       }
-      if (total.added + total.updated === 0) return showToast(t("settings.importNothing"));
-      showToast(t("settings.importDone", total));
+      if (total.added + total.updated === 0) return showToast(t("settings.importNothing"), { type: "info" });
+      showToast(t("settings.importDone", total), { type: "success" });
     } catch (err) {
       const known = ["format", "size", "invalid", "mismatch"].includes(err?.message) ? err.message : "read";
-      showToast(t(`settings.importErr.${known}`));
+      showToast(t(`settings.importErr.${known}`), { type: "error" });
     } finally {
       setBusy(null);
     }
   }
-
-  const isPreset = SEED_PRESETS.some((p) => p.hex.toUpperCase() === seed);
 
   return (
     <div className="page page-enter pb-4">
@@ -236,7 +219,7 @@ export default function Settings() {
           )}
 
           {canInstall && !installed && (
-            <div className="mb-8 bg-primary-container text-on-primary-container rounded-m3-xl p-5 flex items-center gap-4">
+            <div className="mb-8 bg-primary-container text-on-primary-container rounded-xl p-5 flex items-center gap-4">
               <span className="w-12 h-12 rounded-full bg-surface/60 flex items-center justify-center shrink-0">
                 <Smartphone size={24} />
               </span>
@@ -265,78 +248,6 @@ export default function Settings() {
                 { key: "system", label: t("theme.systemShort"), icon: Monitor },
               ]}
             />
-          </SettingGroup>
-
-          <SettingGroup title={t("settings.themeColor")}>
-            <div className="card-filled p-4">
-              <p className="t-body-medium text-on-surface-variant mb-4">
-                {t("settings.themeColorText")}
-              </p>
-              <div
-                className="flex flex-wrap gap-3"
-                role="radiogroup"
-                aria-label={t("settings.themeColor")}
-              >
-                {SEED_PRESETS.map((p) => {
-                  const selected = seed === p.hex.toUpperCase();
-                  return (
-                    <button
-                      key={p.key}
-                      role="radio"
-                      aria-checked={selected}
-                      aria-label={t(`theme.color.${p.key}`)}
-                      title={t(`theme.color.${p.key}`)}
-                      onClick={() => handleSeed(p.hex)}
-                      className="state w-10 h-10 rounded-full flex items-center justify-center text-white transition-transform duration-200 ease-emphasized active:scale-90"
-                      style={{
-                        background: p.hex,
-                        boxShadow: selected
-                          ? `0 0 0 3px rgb(var(--md-surface-container-highest)), 0 0 0 5px ${p.hex}`
-                          : "none",
-                      }}
-                    >
-                      {selected && <Check size={20} />}
-                    </button>
-                  );
-                })}
-                {/* Màu tùy chọn: hộp chọn màu gốc của trình duyệt */}
-                <label
-                  title={t("settings.customColor")}
-                  className="state relative w-10 h-10 rounded-full flex items-center justify-center cursor-pointer text-on-surface-variant"
-                  style={{
-                    background: !isPreset
-                      ? seed
-                      : "conic-gradient(#e8743b, #d9a400, #5bab5b, #00a19b, #769cdf, #8e6fd8, #d86aa8, #e8743b)",
-                    boxShadow: !isPreset
-                      ? `0 0 0 3px rgb(var(--md-surface-container-highest)), 0 0 0 5px ${seed}`
-                      : "none",
-                  }}
-                >
-                  {!isPreset ? (
-                    <Check size={20} className="text-white" />
-                  ) : (
-                    <Palette size={20} className="text-white drop-shadow" />
-                  )}
-                  <input
-                    type="color"
-                    value={seed}
-                    onChange={(e) =>
-                      handleSeed(e.target.value, { debounce: true })
-                    }
-                    aria-label={t("settings.customColor")}
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                  />
-                </label>
-              </div>
-              {seed !== DEFAULT_SEED && (
-                <button
-                  onClick={() => handleSeed(DEFAULT_SEED)}
-                  className="btn btn-text state mt-3 -ml-3"
-                >
-                  {t("settings.resetColor")}
-                </button>
-              )}
-            </div>
           </SettingGroup>
 
           <SettingGroup title={t("settings.language")}>
@@ -383,7 +294,6 @@ export default function Settings() {
             <TextField
               as="select"
               label={t("settings.startPage")}
-              fieldBg="var(--md-surface-container-highest)"
               value={startPage}
               onChange={(e) => handleStartPage(e.target.value)}
             >
@@ -433,7 +343,7 @@ export default function Settings() {
                     className="hidden"
                   />
 
-                  <div className="rounded-m3-md bg-surface-container-highest p-4 mb-3">
+                  <div className="rounded-md bg-surface-container-low border border-outline-variant p-4 mb-3">
                     <p className="t-title-small mb-1">{t("settings.all")}</p>
                     <p className="t-body-small text-on-surface-variant mb-3">
                       {t(`settings.allHint.${format}`)}
@@ -460,7 +370,7 @@ export default function Settings() {
 
                   <div className="space-y-3">
                     {["entries", "activities", "moods"].map((ds) => (
-                      <div key={ds} className="rounded-m3-md bg-surface-container-highest p-4">
+                      <div key={ds} className="rounded-md bg-surface-container-low border border-outline-variant p-4">
                         <p className="t-title-small mb-3">{t(`settings.dataset.${ds}`)}</p>
                         <div className="flex gap-2">
                           <button
@@ -488,6 +398,19 @@ export default function Settings() {
             </div>
           </SettingGroup>
 
+          <SettingGroup title={t("settings.about")}>
+            <Link to="/welcome" className="card-filled state flex items-center gap-4 p-4">
+              <span className="w-10 h-10 rounded-md bg-primary-container text-brand flex items-center justify-center shrink-0">
+                <Sparkles size={20} />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block t-title-small">{t("settings.intro")}</span>
+                <span className="block t-body-small text-on-surface-variant">{t("settings.introText")}</span>
+              </span>
+              <ChevronRight size={18} className="text-on-surface-variant shrink-0" />
+            </Link>
+          </SettingGroup>
+
           <div className="card-outlined p-4 flex items-center gap-4">
             <span className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
               <Heart size={20} />
@@ -506,7 +429,7 @@ export default function Settings() {
 function SettingGroup({ title, children }) {
   return (
     <section className="mb-8">
-      <h2 className="t-title-small text-primary mb-3 px-1">{title}</h2>
+      <h2 className="t-title-small text-brand mb-3 px-1">{title}</h2>
       {children}
     </section>
   );

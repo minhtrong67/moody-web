@@ -1,12 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import '@fontsource/roboto/latin-400.css'
-import '@fontsource/roboto/latin-500.css'
-import '@fontsource/roboto/latin-700.css'
-import '@fontsource/roboto/vietnamese-400.css'
-import '@fontsource/roboto/vietnamese-500.css'
-import '@fontsource/roboto/vietnamese-700.css'
+// Inter (variable) — chỉ nạp subset latin + vietnamese để giữ nhẹ.
+import '@fontsource-variable/inter/wght.css'
+import './styles/theme.css' // bảng màu teal-zinc (nguồn màu duy nhất)
 import './index.css'
 import { initTheme } from './lib/theme'
 

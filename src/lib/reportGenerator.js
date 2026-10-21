@@ -13,7 +13,7 @@ const esc = (v) =>
 async function buildReport({ periodLabel, stats, distribution, activityPie = [], i18n }) {
   const { t, locale } = i18n
   const accent = getReportAccent()
-  const { default: html2canvas } = await import('html2canvas')
+  const { default: html2canvas } = await import('html2canvas-pro')
 
   const node = document.createElement('div')
   // QUAN TRỌNG: giữ phần tử ở toạ độ dương bình thường (0,0), KHÔNG dùng left âm,
@@ -29,8 +29,8 @@ async function buildReport({ periodLabel, stats, distribution, activityPie = [],
   node.style.boxSizing = 'border-box'
   node.style.padding = '0 40px'
   node.style.background = '#FFFFFF'
-  node.style.color = '#191C20'
-  node.style.fontFamily = "Roboto, 'Segoe UI', Arial, sans-serif"
+  node.style.color = '#18181B'
+  node.style.fontFamily = "'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif"
 
   const h = (text) => `<div style="font-size:14px; font-weight:700; color:${accent}; margin-bottom:12px;">${esc(text)}</div>`
   // Mỗi khối (và từng dòng chú thích) mang data-blk để PDF ngắt trang giữa các khối, không cắt ngang nội dung.
@@ -44,9 +44,9 @@ async function buildReport({ periodLabel, stats, distribution, activityPie = [],
       `<div style="border-bottom:3px solid ${accent}; padding-bottom:16px; padding-top:40px; display:flex; justify-content:space-between; align-items:flex-end;">
         <div>
           <div style="font-size:22px; font-weight:700; color:${accent};">${esc(t('report.title'))}</div>
-          <div style="font-size:13px; color:#44474E; margin-top:4px;">${esc(periodLabel)}</div>
+          <div style="font-size:13px; color:#52525B; margin-top:4px;">${esc(periodLabel)}</div>
         </div>
-        <div style="font-size:11px; color:#74777F;">${esc(t('report.exportedOn', { date: new Date().toLocaleDateString(locale) }))}</div>
+        <div style="font-size:11px; color:#71717A;">${esc(t('report.exportedOn', { date: new Date().toLocaleDateString(locale) }))}</div>
       </div>`,
       24
     ) +
@@ -65,7 +65,7 @@ async function buildReport({ periodLabel, stats, distribution, activityPie = [],
       barList(activityPie, activityTotal, accent)
       : '') +
     block(
-      `<div style="font-size:10px; color:#74777F; text-align:center; border-top:1px solid #C4C6D0; padding:12px 0 40px;">${esc(t('report.footer'))}</div>`,
+      `<div style="font-size:10px; color:#71717A; text-align:center; border-top:1px solid #E4E4E7; padding:12px 0 40px;">${esc(t('report.footer'))}</div>`,
       0
     )
 
@@ -135,9 +135,9 @@ export async function exportStatsImage(args) {
 
 function statCard(label, value) {
   return `
-    <div style="flex:1; border:1px solid #C4C6D0; border-radius:12px; padding:12px 14px;">
-      <div style="font-size:11px; color:#44474E; margin-bottom:4px;">${esc(label)}</div>
-      <div style="font-size:16px; font-weight:700; color:#191C20;">${esc(value)}</div>
+    <div style="flex:1; border:1px solid #E4E4E7; border-radius:12px; padding:12px 14px;">
+      <div style="font-size:11px; color:#52525B; margin-bottom:4px;">${esc(label)}</div>
+      <div style="font-size:16px; font-weight:700; color:#18181B;">${esc(value)}</div>
     </div>
   `
 }
@@ -177,7 +177,7 @@ function pieChart(items, total) {
     const right = Math.cos(mid) >= 0
     const text = frac < 0.03 ? d.emoji : `${d.emoji} ${Math.round(frac * 100)}%`
     labels.push(
-      `<div style="position:absolute; left:${(right ? lx : lx - LABEL_W).toFixed(1)}px; top:${(ly - 9).toFixed(1)}px; width:${LABEL_W}px; height:18px; line-height:18px; font-size:12px; color:#191C20; white-space:nowrap; text-align:${right ? 'left' : 'right'};">${esc(text)}</div>`
+      `<div style="position:absolute; left:${(right ? lx : lx - LABEL_W).toFixed(1)}px; top:${(ly - 9).toFixed(1)}px; width:${LABEL_W}px; height:18px; line-height:18px; font-size:12px; color:#18181B; white-space:nowrap; text-align:${right ? 'left' : 'right'};">${esc(text)}</div>`
     )
   }
 
@@ -203,10 +203,10 @@ function barList(items, total, fallback) {
           <span style="position:absolute; left:0; top:${(ROW_H - 10) / 2}px; width:10px; height:10px; border-radius:50%; background:${color};"></span>
           <span style="position:absolute; left:20px; top:0; width:24px; height:${ROW_H}px; line-height:${ROW_H}px; font-size:15px; text-align:center;">${esc(d.emoji)}</span>
           <span style="position:absolute; left:52px; right:90px; top:0; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(d.label)}</span>
-          <span style="position:absolute; right:48px; top:0; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; color:#74777F; text-align:right;">${d.count}</span>
+          <span style="position:absolute; right:48px; top:0; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; color:#71717A; text-align:right;">${d.count}</span>
           <span style="position:absolute; right:0; top:0; width:40px; height:${ROW_H}px; line-height:${ROW_H}px; font-size:12px; font-weight:700; text-align:right;">${Math.round(pct)}%</span>
         </div>
-        <div style="height:8px; border-radius:4px; background:#E2E2E9; overflow:hidden;">
+        <div style="height:8px; border-radius:4px; background:#F4F4F5; overflow:hidden;">
           <div style="height:8px; width:${pct.toFixed(2)}%; border-radius:4px; background:${color};"></div>
         </div>
       </div>`

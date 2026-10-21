@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 /* =====================================================================
-   Material Design 3 — color roles (seed #769CDF — Material Theme Builder export)
-   Giá trị dạng "R G B" để dùng được với opacity của Tailwind (bg-primary/10…).
+   Moody — Modern Minimalist
+   ---------------------------------------------------------------------
+   Nguồn màu duy nhất: src/styles/theme.css (teal-zinc, token dạng oklch,
+   được import trong main.jsx). File này KHÔNG khai báo màu mới — chỉ suy ra
+   các "vai trò" (--c-*) từ token của theme.css để Tailwind và component dùng.
+   Muốn đổi màu cả app: thay theme.css, không cần sửa gì ở đây.
    ===================================================================== */
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
@@ -12,71 +16,81 @@
   --font-scale: 1;
   color-scheme: light;
 
-  --md-primary: 65 95 145;
-  --md-on-primary: 255 255 255;
-  --md-primary-container: 214 227 255;
-  --md-on-primary-container: 40 71 119;
-  --md-secondary: 86 95 113;
-  --md-on-secondary: 255 255 255;
-  --md-secondary-container: 218 226 249;
-  --md-on-secondary-container: 62 71 89;
-  --md-tertiary: 112 85 117;
-  --md-on-tertiary: 255 255 255;
-  --md-tertiary-container: 250 216 253;
-  --md-on-tertiary-container: 87 62 92;
-  --md-error: 186 26 26;
-  --md-on-error: 255 255 255;
-  --md-error-container: 255 218 214;
-  --md-on-error-container: 147 0 10;
-  --md-surface: 249 249 255;
-  --md-surface-dim: 217 217 224;
-  --md-surface-container-lowest: 255 255 255;
-  --md-surface-container-low: 243 243 250;
-  --md-surface-container: 237 237 244;
-  --md-surface-container-high: 231 232 238;
-  --md-surface-container-highest: 226 226 233;
-  --md-on-surface: 25 28 32;
-  --md-on-surface-variant: 68 71 78;
-  --md-outline: 116 119 127;
-  --md-outline-variant: 196 198 208;
-  --md-inverse-surface: 46 48 54;
-  --md-inverse-on-surface: 240 240 247;
-  --md-inverse-primary: 170 199 255;
+  /* Nền & chữ */
+  --c-surface: var(--background);
+  --c-on-surface: var(--foreground);
+  --c-on-surface-variant: var(--muted-foreground);
+
+  /* Các lớp nền: phân tầng bằng độ đậm rất nhẹ + viền, không dùng đổ bóng nặng */
+  --c-surface-dim: var(--muted);
+  --c-surface-container-lowest: var(--background);
+  --c-surface-container-low: color-mix(in oklab, var(--foreground) 2%, var(--background));
+  --c-surface-container: var(--muted);
+  --c-surface-container-high: color-mix(in oklab, var(--foreground) 6.5%, var(--background));
+  --c-surface-container-highest: color-mix(in oklab, var(--foreground) 9%, var(--background));
+
+  /* Đường viền */
+  --c-outline: var(--input);
+  --c-outline-variant: var(--border);
+
+  /* Thương hiệu (teal) */
+  --c-primary: var(--primary);
+  --c-on-primary: var(--primary-foreground);
+  --c-brand: var(--primary); /* màu dùng cho chữ/icon trên nền thường */
+  --c-primary-container: color-mix(in oklab, var(--primary) 9%, var(--background));
+  --c-on-primary-container: var(--primary);
+
+  /* Trung tính (secondary) */
+  --c-secondary: var(--muted-foreground);
+  --c-on-secondary: var(--background);
+  --c-secondary-container: var(--secondary);
+  --c-on-secondary-container: var(--secondary-foreground);
+
+  /* Điểm nhấn phụ lấy từ dải chart của theme */
+  --c-tertiary: var(--chart-3);
+  --c-on-tertiary: var(--primary-foreground);
+  --c-tertiary-container: color-mix(in oklab, var(--chart-2) 14%, var(--background));
+  --c-on-tertiary-container: var(--chart-5);
+
+  /* Lỗi */
+  --c-error: var(--destructive);
+  --c-on-error: oklch(0.985 0 0);
+  --c-error-container: color-mix(in oklab, var(--destructive) 10%, var(--background));
+  --c-on-error-container: var(--destructive);
+
+  /* Đảo màu (snackbar…) */
+  --c-inverse-surface: var(--foreground);
+  --c-inverse-on-surface: var(--background);
+  --c-inverse-primary: var(--chart-2);
+
+  --c-popover: var(--popover);
+  --c-popover-foreground: var(--popover-foreground);
+
+  /* Thành phần */
+  --c-segment-active: var(--background);
+  --c-switch-off: color-mix(in oklab, var(--foreground) 16%, var(--background));
+  --c-scrim: oklch(0 0 0 / 0.5);
 }
 
-html.dark {
+.dark {
   color-scheme: dark;
 
-  --md-primary: 170 199 255;
-  --md-on-primary: 10 48 95;
-  --md-primary-container: 40 71 119;
-  --md-on-primary-container: 214 227 255;
-  --md-secondary: 190 198 220;
-  --md-on-secondary: 40 49 65;
-  --md-secondary-container: 62 71 89;
-  --md-on-secondary-container: 218 226 249;
-  --md-tertiary: 221 188 224;
-  --md-on-tertiary: 63 40 68;
-  --md-tertiary-container: 87 62 92;
-  --md-on-tertiary-container: 250 216 253;
-  --md-error: 255 180 171;
-  --md-on-error: 105 0 5;
-  --md-error-container: 147 0 10;
-  --md-on-error-container: 255 218 214;
-  --md-surface: 17 19 24;
-  --md-surface-dim: 17 19 24;
-  --md-surface-container-lowest: 12 14 19;
-  --md-surface-container-low: 25 28 32;
-  --md-surface-container: 29 32 36;
-  --md-surface-container-high: 40 42 47;
-  --md-surface-container-highest: 51 53 58;
-  --md-on-surface: 226 226 233;
-  --md-on-surface-variant: 196 198 208;
-  --md-outline: 142 144 153;
-  --md-outline-variant: 68 71 78;
-  --md-inverse-surface: 226 226 233;
-  --md-inverse-on-surface: 46 48 54;
-  --md-inverse-primary: 65 95 145;
+  --c-surface-container-low: var(--card);
+  --c-surface-container: color-mix(in oklab, var(--foreground) 9%, var(--background));
+  --c-surface-container-high: var(--muted);
+  --c-surface-container-highest: color-mix(in oklab, var(--muted) 88%, var(--foreground));
+
+  /* --primary của theme tối là teal đậm (hợp làm nền nút); chữ/icon cần teal sáng hơn để đủ tương phản */
+  --c-brand: var(--chart-2);
+  --c-primary-container: color-mix(in oklab, var(--chart-2) 14%, var(--background));
+  --c-on-primary-container: var(--chart-2);
+
+  --c-error-container: color-mix(in oklab, var(--destructive) 16%, var(--background));
+  --c-on-error: oklch(0.141 0.005 285.823);
+
+  --c-segment-active: color-mix(in oklab, var(--muted) 82%, var(--foreground));
+  --c-switch-off: color-mix(in oklab, var(--foreground) 22%, var(--background));
+  --c-scrim: oklch(0 0 0 / 0.62);
 }
 
 html {
@@ -88,9 +102,12 @@ html, body, #root {
 }
 
 body {
-  font-family: Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background: rgb(var(--md-surface));
-  color: rgb(var(--md-on-surface));
+  font-family: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  background: var(--c-surface);
+  color: var(--c-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 input, textarea, select, button {
@@ -111,18 +128,22 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid rgb(var(--md-primary));
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
+::selection {
+  background: color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
 input::placeholder, textarea::placeholder {
-  color: rgb(var(--md-on-surface-variant));
-  opacity: 0.8;
+  color: var(--c-on-surface-variant);
+  opacity: 0.7;
 }
 
 select option {
-  background: rgb(var(--md-surface-container-high));
-  color: rgb(var(--md-on-surface));
+  background: var(--popover);
+  color: var(--popover-foreground);
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -148,23 +169,23 @@ select option {
 @media (min-width: 768px) { .page-narrow { max-width: 40rem; } }
 @media (min-width: 1280px) { .page-narrow { max-width: 48rem; } }
 
-/* =====================================================================
-   Typography scale (M3)
-   ===================================================================== */
 @layer components {
-  .t-headline-medium { font-size: 1.75rem; line-height: 2.25rem; font-weight: 400; }
-  .t-headline-small  { font-size: 1.5rem;  line-height: 2rem;    font-weight: 400; }
-  .t-title-large     { font-size: 1.375rem; line-height: 1.75rem; font-weight: 400; }
-  .t-title-medium    { font-size: 1rem;    line-height: 1.5rem;  font-weight: 500; letter-spacing: 0.009em; }
-  .t-title-small     { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.007em; }
-  .t-body-large      { font-size: 1rem;    line-height: 1.5rem;  font-weight: 400; letter-spacing: 0.03em; }
-  .t-body-medium     { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; letter-spacing: 0.018em; }
-  .t-body-small      { font-size: 0.75rem; line-height: 1rem;    font-weight: 400; letter-spacing: 0.033em; }
-  .t-label-large     { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.007em; }
-  .t-label-medium    { font-size: 0.75rem; line-height: 1rem;    font-weight: 500; letter-spacing: 0.042em; }
-  .t-label-small     { font-size: 0.6875rem; line-height: 1rem;  font-weight: 500; letter-spacing: 0.045em; }
+  /* =====================================================================
+     Typography — Inter, tiêu đề đậm vừa, chữ nhỏ gọn
+     ===================================================================== */
+  .t-headline-medium { font-size: 1.75rem;  line-height: 2.125rem; font-weight: 600; letter-spacing: -0.025em; }
+  .t-headline-small  { font-size: 1.375rem; line-height: 1.75rem;  font-weight: 600; letter-spacing: -0.02em; }
+  .t-title-large     { font-size: 1.125rem; line-height: 1.75rem;  font-weight: 600; letter-spacing: -0.015em; }
+  .t-title-medium    { font-size: 1rem;     line-height: 1.5rem;   font-weight: 500; letter-spacing: -0.01em; }
+  .t-title-small     { font-size: 0.875rem; line-height: 1.25rem;  font-weight: 500; letter-spacing: -0.005em; }
+  .t-body-large      { font-size: 1rem;     line-height: 1.5rem;   font-weight: 400; }
+  .t-body-medium     { font-size: 0.875rem; line-height: 1.25rem;  font-weight: 400; }
+  .t-body-small      { font-size: 0.75rem;  line-height: 1rem;     font-weight: 400; }
+  .t-label-large     { font-size: 0.875rem; line-height: 1.25rem;  font-weight: 500; }
+  .t-label-medium    { font-size: 0.75rem;  line-height: 1rem;     font-weight: 500; }
+  .t-label-small     { font-size: 0.6875rem; line-height: 1rem;    font-weight: 500; letter-spacing: 0.01em; }
 
-  /* ---------- State layer: hover 8% · focus 10% · pressed 10% ---------- */
+  /* ---------- State layer: hover 6% · focus/pressed 10% ---------- */
   .state {
     position: relative;
     overflow: hidden;
@@ -178,12 +199,12 @@ select option {
     opacity: 0;
     pointer-events: none;
     z-index: -1;
-    transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1);
+    transition: opacity 0.15s ease;
   }
   @media (hover: hover) {
-    .state:hover:not(:disabled)::before { opacity: 0.08; }
+    .state:hover:not(:disabled)::before { opacity: 0.06; }
   }
-  .state:focus-visible::before { opacity: 0.1; }
+  .state:focus-visible::before { opacity: 0.08; }
   .state:active:not(:disabled)::before { opacity: 0.1; }
 
   /* ---------- Buttons ---------- */
@@ -193,35 +214,32 @@ select option {
     justify-content: center;
     gap: 8px;
     height: 40px;
-    padding: 0 24px;
-    border-radius: 9999px;
+    padding: 0 16px;
+    border-radius: calc(var(--radius) - 2px);
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 500;
-    letter-spacing: 0.007em;
     white-space: nowrap;
     user-select: none;
-    transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+    transition: background-color 0.15s, box-shadow 0.15s, transform 0.1s;
   }
-  .btn-filled   { background: rgb(var(--md-primary)); color: rgb(var(--md-on-primary)); }
-  .btn-filled:hover:not(:disabled) { box-shadow: 0 1px 2px rgb(0 0 0 / .3), 0 1px 3px 1px rgb(0 0 0 / .15); }
-  .btn-tonal    { background: rgb(var(--md-secondary-container)); color: rgb(var(--md-on-secondary-container)); }
-  .btn-outlined { color: rgb(var(--md-primary)); box-shadow: inset 0 0 0 1px rgb(var(--md-outline)); }
-  .btn-text     { color: rgb(var(--md-primary)); padding: 0 12px; }
-  .btn-error    { background: rgb(var(--md-error)); color: rgb(var(--md-on-error)); }
-  .btn-text-error { color: rgb(var(--md-error)); padding: 0 12px; }
-  .btn-error-tonal { background: rgb(var(--md-error-container)); color: rgb(var(--md-on-error-container)); }
+  .btn:active:not(:disabled) { transform: scale(0.985); }
+  .btn-filled   { background: var(--c-primary); color: var(--c-on-primary); }
+  .btn-filled:hover:not(:disabled) { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08); }
+  .btn-tonal    { background: var(--c-secondary-container); color: var(--c-on-secondary-container); }
+  .btn-outlined { background: var(--c-surface); color: var(--c-on-surface); box-shadow: inset 0 0 0 1px var(--c-outline), 0 1px 2px 0 rgb(0 0 0 / 0.04); }
+  .dark .btn-outlined { background: color-mix(in oklab, var(--input) 30%, transparent); box-shadow: inset 0 0 0 1px var(--input); }
+  .btn-text     { color: var(--c-brand); padding: 0 12px; }
+  .btn-error    { background: var(--c-error); color: var(--c-on-error); }
+  .btn-text-error { color: var(--c-error); padding: 0 12px; }
+  .btn-error-tonal { background: var(--c-error-container); color: var(--c-on-error-container); }
   .btn-block { width: 100%; }
-  .btn-lg { height: 48px; }
+  .btn-lg { height: 44px; padding: 0 20px; }
   .btn:disabled {
     cursor: default;
     box-shadow: none;
-    color: rgb(var(--md-on-surface) / 0.38);
+    opacity: 0.5;
   }
-  .btn-filled:disabled, .btn-tonal:disabled, .btn-error:disabled, .btn-error-tonal:disabled {
-    background: rgb(var(--md-on-surface) / 0.12);
-  }
-  .btn-outlined:disabled { box-shadow: inset 0 0 0 1px rgb(var(--md-on-surface) / 0.12); }
 
   /* ---------- Icon buttons ---------- */
   .icon-btn {
@@ -231,41 +249,41 @@ select option {
     width: 40px;
     height: 40px;
     flex-shrink: 0;
-    border-radius: 9999px;
-    color: rgb(var(--md-on-surface-variant));
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--c-on-surface-variant);
   }
   .icon-btn-sm { width: 32px; height: 32px; }
-  .icon-btn-filled-tonal { background: rgb(var(--md-secondary-container)); color: rgb(var(--md-on-secondary-container)); }
-  .icon-btn-primary { color: rgb(var(--md-primary)); }
-  .icon-btn:disabled { color: rgb(var(--md-on-surface) / 0.38); }
+  .icon-btn-filled-tonal { background: var(--c-secondary-container); color: var(--c-on-secondary-container); }
+  .icon-btn-primary { color: var(--c-brand); }
+  .icon-btn:disabled { opacity: 0.4; }
 
-  /* ---------- Cards ---------- */
-  .card-filled   { background: rgb(var(--md-surface-container-highest)); border-radius: 12px; }
-  .card-elevated { background: rgb(var(--md-surface-container-low)); border-radius: 12px; box-shadow: 0 1px 2px rgb(0 0 0 / .3), 0 1px 3px 1px rgb(0 0 0 / .15); }
-  .card-outlined { background: rgb(var(--md-surface)); border-radius: 12px; box-shadow: inset 0 0 0 1px rgb(var(--md-outline-variant)); }
-  .card-tonal    { background: rgb(var(--md-surface-container-low)); border-radius: 12px; }
+  /* ---------- Cards: nền phẳng + viền mảnh ---------- */
+  .card-filled   { background: var(--c-surface-container-low); border: 1px solid var(--c-outline-variant); border-radius: var(--radius); }
+  .card-elevated { background: var(--card); border: 1px solid var(--c-outline-variant); border-radius: var(--radius); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+  .card-outlined { background: var(--c-surface); border: 1px solid var(--c-outline-variant); border-radius: var(--radius); }
+  .card-tonal    { background: var(--c-surface-container); border-radius: var(--radius); }
 
   /* ---------- Chips ---------- */
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     height: 32px;
     padding: 0 12px;
-    border-radius: 8px;
-    font-size: 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
     line-height: 1.25rem;
     font-weight: 500;
-    letter-spacing: 0.007em;
-    color: rgb(var(--md-on-surface-variant));
-    box-shadow: inset 0 0 0 1px rgb(var(--md-outline));
+    color: var(--c-on-surface-variant);
+    background: var(--c-surface);
+    box-shadow: inset 0 0 0 1px var(--c-outline);
     white-space: nowrap;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.15s, box-shadow 0.15s, color 0.15s;
   }
   .chip-selected {
-    background: rgb(var(--md-secondary-container));
-    color: rgb(var(--md-on-secondary-container));
-    box-shadow: none;
+    background: var(--c-primary-container);
+    color: var(--c-brand);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-brand) 40%, transparent);
   }
   .chip-static {
     height: 24px;
@@ -273,169 +291,140 @@ select option {
     gap: 4px;
     font-size: 0.75rem;
     box-shadow: none;
-    background: rgb(var(--md-surface-container-highest));
+    background: var(--c-surface-container);
   }
 
-  /* ---------- Outlined text field (floating label) ---------- */
-  .m3-field {
+  /* ---------- Form field: nhãn phía trên, ô nhập phẳng ---------- */
+  .field {
     position: relative;
   }
-  .m3-input {
+  .field > label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+    font-weight: 500;
+    color: var(--c-on-surface);
+  }
+  .field-control {
+    position: relative;
+  }
+  .field-input {
     display: block;
     width: 100%;
-    height: 56px;
-    padding: 0 16px;
-    border-radius: 4px;
-    background: transparent;
-    color: rgb(var(--md-on-surface));
-    font-size: 1rem;
-    letter-spacing: 0.03em;
-    border: 1px solid rgb(var(--md-outline));
+    height: 44px;
+    padding: 0 12px;
+    border-radius: calc(var(--radius) - 2px);
+    background: var(--c-surface);
+    color: var(--c-on-surface);
+    font-size: 0.9375rem;
+    border: 1px solid var(--c-outline);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
-  textarea.m3-input {
+  .dark .field-input { background: color-mix(in oklab, var(--input) 30%, transparent); border-color: var(--input); box-shadow: none; }
+  textarea.field-input {
     height: auto;
-    min-height: 56px;
-    padding: 16px;
+    min-height: 44px;
+    padding: 10px 12px;
     resize: none;
     overflow: hidden;
     line-height: 24px;
   }
-  select.m3-input {
+  select.field-input {
     appearance: none;
     -webkit-appearance: none;
-    padding-right: 48px;
+    padding-right: 40px;
   }
-  .m3-input.has-leading { padding-left: 48px; }
-  .m3-input:hover:not(:focus):not(:disabled) { border-color: rgb(var(--md-on-surface)); }
-  .m3-input:focus {
-    border-color: rgb(var(--md-primary));
-    box-shadow: 0 0 0 1px rgb(var(--md-primary));
+  .field-input.has-leading { padding-left: 40px; }
+  .field-input:hover:not(:focus):not(:disabled) { border-color: var(--ring); }
+  .field-input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 35%, transparent);
   }
-  .m3-input::placeholder { color: transparent; }
-  .m3-input:focus::placeholder { color: rgb(var(--md-on-surface-variant)); opacity: 0.8; }
-  .m3-field > label {
+  .field-input:disabled { opacity: 0.5; cursor: not-allowed; }
+  .field-icon {
     position: absolute;
-    left: 12px;
-    top: 16px;
-    padding: 0 4px;
-    line-height: 24px;
-    font-size: 1rem;
-    letter-spacing: 0.03em;
-    color: rgb(var(--md-on-surface-variant));
-    background: rgb(var(--field-bg, var(--md-surface)));
-    transform-origin: left top;
+    top: 12px;
+    width: 20px;
+    height: 20px;
     pointer-events: none;
-    transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), color 0.15s;
-    max-width: calc(100% - 24px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .m3-field > .m3-input:focus ~ label,
-  .m3-field > .m3-input:not(:placeholder-shown) ~ label,
-  .m3-field.is-float > label {
-    transform: translateY(-24px) scale(0.75);
-  }
-  .m3-field > .m3-input:focus ~ label { color: rgb(var(--md-primary)); }
-  .m3-field > .field-icon {
-    position: absolute;
-    top: 16px;
-    width: 24px;
-    height: 24px;
-    pointer-events: none;
-    color: rgb(var(--md-on-surface-variant));
+    color: var(--c-on-surface-variant);
   }
 
   /* ---------- Switch ---------- */
-  .m3-switch {
+  .switch {
     position: relative;
     flex-shrink: 0;
-    width: 52px;
-    height: 32px;
-    border-radius: 9999px;
-    background: rgb(var(--md-surface-container-highest));
-    box-shadow: inset 0 0 0 2px rgb(var(--md-outline));
-    transition: background-color 0.2s, box-shadow 0.2s;
-  }
-  .m3-switch[aria-checked='true'] {
-    background: rgb(var(--md-primary));
-    box-shadow: none;
-  }
-  .m3-switch .thumb {
-    position: absolute;
-    top: 50%;
-    left: 4px;
-    width: 16px;
-    height: 16px;
-    margin-top: -8px;
-    border-radius: 9999px;
-    background: rgb(var(--md-outline));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), width 0.2s, height 0.2s, margin-top 0.2s, left 0.2s, background-color 0.2s;
-  }
-  .m3-switch[aria-checked='true'] .thumb {
-    width: 24px;
+    width: 44px;
     height: 24px;
-    margin-top: -12px;
-    left: 4px;
-    transform: translateX(20px);
-    background: rgb(var(--md-on-primary));
-    color: rgb(var(--md-on-primary-container));
+    border-radius: 9999px;
+    background: var(--c-switch-off);
+    transition: background-color 0.2s;
   }
-  .m3-switch:active .thumb { width: 28px; height: 28px; margin-top: -14px; left: 2px; }
-  .m3-switch[aria-checked='true']:active .thumb { transform: translateX(20px); left: 2px; }
+  .switch[aria-checked='true'] { background: var(--c-primary); }
+  .switch .thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    background: oklch(1 0 0);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+  }
+  .switch[aria-checked='true'] .thumb { transform: translateX(20px); }
 
-  /* ---------- Segmented button ---------- */
+  /* ---------- Segmented control (dạng tabs của shadcn) ---------- */
   .segmented {
     display: flex;
     width: 100%;
-    height: 40px;
-    border-radius: 9999px;
-    overflow: hidden;
-    box-shadow: inset 0 0 0 1px rgb(var(--md-outline));
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius);
+    background: var(--c-surface-container);
   }
   .segmented > button {
     position: relative;
     flex: 1 1 0;
     min-width: 0;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     padding: 0 8px;
-    font-size: 0.875rem;
+    border-radius: calc(var(--radius) - 3px);
+    font-size: 0.8125rem;
     font-weight: 500;
-    letter-spacing: 0;
-    color: rgb(var(--md-on-surface));
-    transition: background-color 0.2s;
+    color: var(--c-on-surface-variant);
+    transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
   }
-  .segmented > button + button { box-shadow: inset 1px 0 0 rgb(var(--md-outline)); }
   .segmented > button[aria-pressed='true'] {
-    background: rgb(var(--md-secondary-container));
-    color: rgb(var(--md-on-secondary-container));
+    background: var(--c-segment-active);
+    color: var(--c-on-surface);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08), 0 0 0 1px var(--c-outline-variant);
   }
 
   /* ---------- Dialog scrim ---------- */
-  .scrim { background: rgb(0 0 0 / 0.32); }
+  .scrim { background: var(--c-scrim); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
 
   /* ---------- Progress ---------- */
-  .m3-spinner { animation: m3-rotate 1.4s linear infinite; }
-  .m3-spinner circle { stroke-dasharray: 1 56; stroke-dashoffset: 0; animation: m3-dash 1.4s ease-in-out infinite; }
+  .spinner { animation: spin 1.4s linear infinite; }
+  .spinner circle { stroke-dasharray: 1 56; stroke-dashoffset: 0; animation: spinner-dash 1.4s ease-in-out infinite; }
 }
 
-@keyframes m3-rotate { to { transform: rotate(360deg); } }
-@keyframes m3-dash {
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spinner-dash {
   0%   { stroke-dasharray: 1 56;  stroke-dashoffset: 0; }
   50%  { stroke-dasharray: 38 56; stroke-dashoffset: -15; }
   100% { stroke-dasharray: 38 56; stroke-dashoffset: -53; }
 }
 
 /* =====================================================================
-   Motion — M3 emphasized easing
+   Motion
    ===================================================================== */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
@@ -444,10 +433,10 @@ select option {
 .page-enter { animation: fadeInUp 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
 
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.92); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
-.pop-in { animation: popIn 0.3s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
+.pop-in { animation: popIn 0.2s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
 
 @keyframes sheetUp {
   from { opacity: 0; transform: translateY(32px); }
@@ -475,9 +464,9 @@ select option {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgb(var(--md-surface-container-high)) 25%,
-    rgb(var(--md-surface-container-highest)) 37%,
-    rgb(var(--md-surface-container-high)) 63%
+    var(--c-surface-container) 25%,
+    var(--c-surface-container-high) 37%,
+    var(--c-surface-container) 63%
   );
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
@@ -488,3 +477,65 @@ select option {
   content-visibility: auto;
   contain-intrinsic-size: auto 8.5rem;
 }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-enter { animation: toastIn 0.28s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
+
+/* =====================================================================
+   Landing — hiệu ứng xuất hiện khi cuộn & chuyển động nền
+   ===================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.05, 0.7, 0.1, 1) var(--d, 0s),
+    transform 0.7s cubic-bezier(0.05, 0.7, 0.1, 1) var(--d, 0s);
+  will-change: opacity, transform;
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+.reveal-scale { transform: translateY(22px) scale(0.97); }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--r, 0deg)); }
+}
+.float { animation: float 6s ease-in-out infinite; animation-delay: var(--fd, 0s); }
+
+@keyframes blobDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(3%, 6%, 0) scale(1.08); }
+}
+.blob { animation: blobDrift 14s ease-in-out infinite; }
+
+@keyframes pan { to { background-position: 200% center; } }
+.text-gradient {
+  background-image: linear-gradient(90deg, var(--c-brand), var(--chart-2), var(--c-brand));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pan 7s linear infinite;
+}
+
+@keyframes growBar { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.grow-bar { transform-origin: bottom; animation: growBar 1.1s cubic-bezier(0.05, 0.7, 0.1, 1) both; animation-delay: var(--gd, 0s); }
+
+@keyframes chipIn {
+  0% { opacity: 0; transform: translateY(8px) scale(0.95); }
+  12%, 80% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-4px) scale(0.98); }
+}
+.chip-cycle { animation: chipIn 3.2s ease-in-out infinite; }
+
+.dot-grid {
+  background-image: radial-gradient(var(--c-outline-variant) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* FAQ (details/summary) */
+.faq summary { list-style: none; cursor: pointer; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq[open] .faq-chevron { transform: rotate(180deg); }
+.faq[open] .faq-body { animation: fadeInUp 0.35s cubic-bezier(0.05, 0.7, 0.1, 1) both; }

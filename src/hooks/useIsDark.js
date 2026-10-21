@@ -20,7 +20,7 @@ export function useThemeColors() {
     muted: readRole('on-surface-variant'),
     line: readRole('outline-variant'),
     surface: readRole('surface-container-high'),
-    accent: readRole('primary'),
+    accent: readRole('brand'),
     secondary: readRole('secondary')
   })
   const [colors, setColors] = useState(read)

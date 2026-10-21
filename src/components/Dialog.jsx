@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
-// Basic dialog của Material Design 3: bo 28dp, nền surface-container-high, tiêu đề headline-small.
+// Dialog phẳng: nền card, viền mảnh, bo góc theo --radius, tiêu đề đậm vừa.
 // Nút hành động đặt trong `children` (dùng <DialogActions>).
 export default function Dialog({ open, title, onClose, children }) {
   useEffect(() => {
@@ -26,8 +26,7 @@ export default function Dialog({ open, title, onClose, children }) {
         aria-modal="true"
         aria-label={title}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm bg-surface-container-high rounded-m3-xl p-6 pop-in shadow-elev-3"
-        style={{ '--field-bg': 'var(--md-surface-container-high)' }}
+        className="w-full max-w-sm bg-popover text-popover-foreground border border-outline-variant rounded-xl p-6 pop-in shadow-elev-4"
       >
         <p className="t-headline-small mb-4">{title}</p>
         {children}

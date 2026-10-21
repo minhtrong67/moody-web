@@ -79,16 +79,9 @@
     />
 
     <!-- ===== PWA / thiết bị ===== -->
-    <meta
-      name="theme-color"
-      content="#F9F9FF"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#111318"
-      media="(prefers-color-scheme: dark)"
-    />
+    <!-- theme-color & manifest được script bên dưới chọn lại theo theme đang dùng (sáng/tối). -->
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="color-scheme" content="light dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -116,7 +109,8 @@
     </script>
 
     <!-- Áp theme NGAY khi trang bắt đầu render (trước khi tải CSS/JS) để không bị nháy nền trắng
-         khi người dùng đang dùng giao diện tối. Logic phải khớp với src/lib/theme.js. -->
+         khi người dùng đang dùng giao diện tối. Logic phải khớp với src/lib/theme.js
+         (kể cả màu #ffffff / #09090b = --background của src/styles/theme.css). -->
     <script>
       (function () {
         try {
@@ -126,32 +120,33 @@
             stored === "dark" ||
             (stored === "system" &&
               window.matchMedia("(prefers-color-scheme: dark)").matches);
-          var css = localStorage.getItem("themeCss");
-          if (css) {
-            var st = document.createElement("style");
-            st.id = "md-theme-override";
-            st.textContent = css;
-            document.head.appendChild(st);
-          }
           var root = document.documentElement;
           if (dark) root.classList.add("dark");
           var scale = localStorage.getItem("fontScale");
           if (scale === "0.9" || scale === "1" || scale === "1.15")
             root.style.setProperty("--font-scale", scale);
+          // Thanh trạng thái + manifest (quyết định màu splash của Android khi cài / cập nhật app).
           var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#111318" : "#F9F9FF");
+          if (meta) meta.setAttribute("content", dark ? "#09090b" : "#ffffff");
+          var link = document.querySelector('link[rel="manifest"]');
+          if (link)
+            link.setAttribute(
+              "href",
+              dark ? "/manifest-dark.webmanifest" : "/manifest.webmanifest",
+            );
         } catch (e) {}
       })();
     </script>
 
     <!-- CSS tối thiểu, inline: nền + màn hình khởi động hiển thị đúng theme trước cả khi file CSS chính tải xong. -->
     <style>
+      /* Giá trị dự phòng = --background / --primary của src/styles/theme.css (theme.css chưa tải ở thời điểm này). */
       html {
-        background: rgb(var(--md-surface, 249 249 255));
+        background: #ffffff;
         color-scheme: light;
       }
       html.dark {
-        background: rgb(var(--md-surface, 17 19 24));
+        background: #09090b;
         color-scheme: dark;
       }
       body {
@@ -163,25 +158,25 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 18px;
+        gap: 20px;
       }
       .boot img {
         width: 64px;
         height: 64px;
-        border-radius: 20px;
+        border-radius: 16px;
         animation: boot-pulse 1.4s ease-in-out infinite;
       }
       .boot i {
         display: inline-block;
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
-        background: rgb(var(--md-primary, 65 95 145));
+        background: #00786f;
         margin: 0 3px;
         animation: boot-bounce 1s infinite ease-in-out both;
       }
       html.dark .boot i {
-        background: rgb(var(--md-primary, 170 199 255));
+        background: #00bba7;
       }
       .boot i:nth-child(1) {
         animation-delay: -0.3s;
@@ -208,6 +203,12 @@
         }
         40% {
           transform: translateY(-6px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot img,
+        .boot i {
+          animation: none;
         }
       }
     </style>

@@ -73,7 +73,7 @@ export default function Dashboard() {
             {loading ? (
               <TodayCardSkeleton />
             ) : todayEntry ? (
-              <div className="relative bg-primary-container text-on-primary-container rounded-m3-xl p-5 flex items-center gap-4">
+              <div className="relative bg-primary-container text-on-primary-container rounded-xl p-5 flex items-center gap-4">
                 <span className="w-14 h-14 rounded-full flex items-center justify-center text-3xl shrink-0 bg-surface/60">
                   {moodByKey(todayEntry.mood)?.emoji}
                 </span>
@@ -86,7 +86,7 @@ export default function Dashboard() {
                 </Link>
               </div>
             ) : (
-              <div className="bg-primary-container text-on-primary-container rounded-m3-xl p-5">
+              <div className="bg-primary-container text-on-primary-container rounded-xl p-5">
                 <div className="flex items-center gap-4 mb-5">
                   <span className="w-12 h-12 rounded-full bg-surface/60 flex items-center justify-center shrink-0">
                     <NotebookPen size={24} />
@@ -131,13 +131,13 @@ export default function Dashboard() {
                         <div
                           className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-base md:text-xl"
                           style={{
-                            background: m ? m.color + "40" : "rgb(var(--md-surface-container-low))",
-                            boxShadow: isToday ? "0 0 0 2px rgb(var(--md-primary))" : "none",
+                            background: m ? m.color + "40" : "var(--c-surface-container)",
+                            boxShadow: isToday ? "0 0 0 2px var(--c-brand)" : "none",
                           }}
                         >
                           {m ? m.emoji : ""}
                         </div>
-                        <span className={`t-label-medium ${isToday ? "text-primary" : "text-on-surface-variant"}`}>{weekdayLabels[i]}</span>
+                        <span className={`t-label-medium ${isToday ? "text-brand" : "text-on-surface-variant"}`}>{weekdayLabels[i]}</span>
                       </div>
                     );
                   })}

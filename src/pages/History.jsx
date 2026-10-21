@@ -124,19 +124,19 @@ function ListView({ loading, entries, deleteEntry, activityById, moodByKey, mood
       <div className="flex flex-col gap-4">
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-4 lg:items-start space-y-3 lg:space-y-0">
           <div className="relative">
-            <Search size={24} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("history.searchPlaceholder")}
               aria-label={t("history.search")}
-              className="w-full h-14 rounded-full bg-surface-container-high pl-14 pr-4 t-body-large focus:outline-none focus:ring-2 focus:ring-primary"
+              className="field-input has-leading"
             />
           </div>
 
           <div className="card-filled overflow-hidden">
-            <button onClick={() => setFiltersOpen((v) => !v)} className="state w-full flex items-center gap-4 px-4 h-14" aria-expanded={filtersOpen}>
-              <SlidersHorizontal size={24} className="text-on-surface-variant shrink-0" />
+            <button onClick={() => setFiltersOpen((v) => !v)} className="state w-full flex items-center gap-3 px-4 h-11" aria-expanded={filtersOpen}>
+              <SlidersHorizontal size={18} className="text-on-surface-variant shrink-0" />
               <span className="flex-1 text-left t-title-small">{t("history.filters")}</span>
               {activeFilterCount > 0 && (
                 <span className="min-w-6 h-6 px-1.5 rounded-full bg-primary text-on-primary t-label-small flex items-center justify-center shrink-0">
@@ -149,14 +149,14 @@ function ListView({ loading, entries, deleteEntry, activityById, moodByKey, mood
             {filtersOpen && (
               <div className="px-4 pb-4 pt-3 pop-in">
                 <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-3 md:gap-3">
-                  <TextField as="select" label={t("history.period")} fieldBg="var(--md-surface-container-highest)" value={period} onChange={(e) => setPeriod(e.target.value)}>
+                  <TextField as="select" label={t("history.period")} value={period} onChange={(e) => setPeriod(e.target.value)}>
                     {PERIOD_KEYS.map((k) => (<option key={k} value={k}>{t(`history.period.${k}`)}</option>))}
                   </TextField>
-                  <TextField as="select" label={t("history.mood")} fieldBg="var(--md-surface-container-highest)" value={moodFilter} onChange={(e) => setMoodFilter(e.target.value)}>
+                  <TextField as="select" label={t("history.mood")} value={moodFilter} onChange={(e) => setMoodFilter(e.target.value)}>
                     <option value="all">{t("history.allMoods")}</option>
                     {moods.map((m) => (<option key={m.key} value={m.key}>{m.emoji} {m.label}</option>))}
                   </TextField>
-                  <TextField as="select" label={t("history.sort")} fieldBg="var(--md-surface-container-highest)" value={sort} onChange={(e) => setSort(e.target.value)}>
+                  <TextField as="select" label={t("history.sort")} value={sort} onChange={(e) => setSort(e.target.value)}>
                     {SORT_KEYS.map((k) => (<option key={k} value={k}>{t(`history.sort.${k}`)}</option>))}
                   </TextField>
                 </div>
@@ -208,7 +208,7 @@ const EntryCard = memo(function EntryCard({ entry: e, mood: m, activityById, onE
   return (
     <li className="cv-auto h-full">
       <SwipeableRow onEdit={() => onEdit(e.id)} onDelete={() => onDelete(e)}>
-        <div className="bg-surface-container-highest p-4 rounded-m3-md h-full">
+        <div className="card-filled border border-outline-variant p-4 rounded-md h-full">
           <div className="flex items-center gap-4">
             <span className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shrink-0" style={{ background: m.color + "40" }}>
               {m?.emoji}
@@ -301,42 +301,42 @@ function CalendarView({ loading, entries, activityById, moodByKey, moods }) {
       </BottomSheet>
 
       <div>
-      <div className="flex items-center justify-between mb-5">
-        <button onClick={() => setCursor(new Date(year, month - 1, 1))} aria-label={t("history.prevMonth")} className="icon-btn state">
-          <ChevronLeft size={24} />
-        </button>
-        <p className="t-title-large capitalize">{monthLabel}</p>
-        <button onClick={() => setCursor(new Date(year, month + 1, 1))} aria-label={t("history.nextMonth")} className="icon-btn state">
-          <ChevronRight size={24} />
-        </button>
-      </div>
+        <div className="flex items-center justify-between mb-5">
+          <button onClick={() => setCursor(new Date(year, month - 1, 1))} aria-label={t("history.prevMonth")} className="icon-btn state">
+            <ChevronLeft size={24} />
+          </button>
+          <p className="t-title-large capitalize">{monthLabel}</p>
+          <button onClick={() => setCursor(new Date(year, month + 1, 1))} aria-label={t("history.nextMonth")} className="icon-btn state">
+            <ChevronRight size={24} />
+          </button>
+        </div>
 
-      <p className="t-body-small text-on-surface-variant text-center mb-4">{t("history.calendarHint")}</p>
+        <p className="t-body-small text-on-surface-variant text-center mb-4">{t("history.calendarHint")}</p>
 
-      <div className="grid grid-cols-7 gap-1 mb-1">
-        {weekdays.map((w) => (
-          <div key={w} className="text-center t-label-medium text-on-surface-variant py-1">{w}</div>
-        ))}
-      </div>
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {weekdays.map((w) => (
+            <div key={w} className="text-center t-label-medium text-on-surface-variant py-1">{w}</div>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-7 gap-1">
-        {cells.map((d, i) => {
-          if (!d) return <div key={i} />;
-          const iso = isoFor(d);
-          const entry = byDate[iso]?.[0];
-          const m = entry ? moodByKey(entry.mood) : null;
-          return (
-            <button
-              key={i}
-              onClick={() => handleDayClick(iso)}
-              className="state aspect-square rounded-full flex flex-col items-center justify-center text-base gap-0.5"
-              style={{ background: m ? m.color + "40" : "transparent" }}
-            >
-              {m ? <span>{m.emoji}</span> : <span className="t-body-medium">{d}</span>}
-            </button>
-          );
-        })}
-      </div>
+        <div className="grid grid-cols-7 gap-1">
+          {cells.map((d, i) => {
+            if (!d) return <div key={i} />;
+            const iso = isoFor(d);
+            const entry = byDate[iso]?.[0];
+            const m = entry ? moodByKey(entry.mood) : null;
+            return (
+              <button
+                key={i}
+                onClick={() => handleDayClick(iso)}
+                className="state aspect-square rounded-full flex flex-col items-center justify-center text-base gap-0.5"
+                style={{ background: m ? m.color + "40" : "transparent" }}
+              >
+                {m ? <span>{m.emoji}</span> : <span className="t-body-medium">{d}</span>}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <MonthSummary entries={monthEntries} moods={moods} t={t} />
@@ -362,9 +362,9 @@ function EntryDetail({ entry: e, mood: m, activityById, t, locale }) {
         </div>
         <span className="t-label-large text-on-surface-variant shrink-0">{t("history.score", { n: e.score ?? m?.score ?? "—" })}</span>
       </div>
-      <p className="t-label-medium text-primary mt-4 mb-1">{t("history.note")}</p>
+      <p className="t-label-medium text-brand mt-4 mb-1">{t("history.note")}</p>
       <p className="t-body-medium text-on-surface-variant whitespace-pre-wrap break-words">{e.note || t("history.noNote")}</p>
-      <p className="t-label-medium text-primary mt-4 mb-2">{t("history.activities")}</p>
+      <p className="t-label-medium text-brand mt-4 mb-2">{t("history.activities")}</p>
       {e.activities?.some((id) => activityById[id]) ? (
         <div className="flex flex-wrap gap-1.5">
           {e.activities.map((id) => {
@@ -395,11 +395,11 @@ function MonthSummary({ entries, moods, t }) {
     <aside className="mt-6 lg:mt-0 card-filled p-5 lg:sticky lg:top-20">
       <p className="t-title-medium mb-4">{t("history.monthSummary")}</p>
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="rounded-m3-md bg-surface-container-highest px-4 py-3">
+        <div className="rounded-md bg-surface-container-low border border-outline-variant px-4 py-3">
           <p className="t-headline-small leading-none">{entries.length}</p>
           <p className="t-label-medium text-on-surface-variant mt-1.5">{t("history.monthDays")}</p>
         </div>
-        <div className="rounded-m3-md bg-surface-container-highest px-4 py-3">
+        <div className="rounded-md bg-surface-container-low border border-outline-variant px-4 py-3">
           <p className="t-headline-small leading-none">{avg != null ? `${avg.toFixed(1)}/5` : "—"}</p>
           <p className="t-label-medium text-on-surface-variant mt-1.5">{t("history.monthAvg")}</p>
         </div>

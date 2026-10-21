@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-// Material Design 3 — các "vai trò màu" (color roles) khai báo bằng CSS variable ở src/index.css,
-// đổi giá trị theo class `.dark`. Tên token Tailwind bám theo tên vai trò của M3.
-const role = (name) => `rgb(var(--md-${name}) / <alpha-value>)`
+// Màu của app đến từ src/styles/theme.css (teal-zinc, oklch). Các "vai trò" --c-* trong src/index.css
+// được suy ra từ token đó; ở đây chỉ ánh xạ chúng thành class Tailwind (bg-surface, text-on-surface, bg-primary/10…).
+// `color-mix` cho phép dùng được cả modifier độ trong suốt của Tailwind với màu oklch.
+const role = (name) => `color-mix(in oklab, var(--c-${name}) calc(<alpha-value> * 100%), transparent)`
 
 export default {
   darkMode: 'class',
@@ -9,12 +10,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Roboto', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        display: ['Roboto', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif']
+        sans: ['"Inter Variable"', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['"Inter Variable"', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif']
       },
       colors: {
         primary: role('primary'),
         'on-primary': role('on-primary'),
+        brand: role('brand'),
+        popover: role('popover'),
+        'popover-foreground': role('popover-foreground'),
         'primary-container': role('primary-container'),
         'on-primary-container': role('on-primary-container'),
         secondary: role('secondary'),
@@ -52,19 +56,20 @@ export default {
           angry: '#C4676B'
         }
       },
-      // Shape scale của M3: xs 4 · sm 8 · md 12 · lg 16 · xl 28 · full
+      // Bo góc suy ra từ --radius của theme.css (0.625rem): xs 4 · sm 6 · md 8 · lg 10 · xl 14
       borderRadius: {
-        'm3-xs': '4px',
-        'm3-sm': '8px',
-        'm3-md': '12px',
-        'm3-lg': '16px',
-        'm3-xl': '28px'
+        xs: 'calc(var(--radius) - 6px)',
+        sm: 'calc(var(--radius) - 4px)',
+        md: 'calc(var(--radius) - 2px)',
+        lg: 'var(--radius)',
+        xl: 'calc(var(--radius) + 4px)'
       },
+      // Đổ bóng rất nhẹ — phân tầng chủ yếu bằng viền
       boxShadow: {
-        'elev-1': '0 1px 2px rgb(0 0 0 / 0.30), 0 1px 3px 1px rgb(0 0 0 / 0.15)',
-        'elev-2': '0 1px 2px rgb(0 0 0 / 0.30), 0 2px 6px 2px rgb(0 0 0 / 0.15)',
-        'elev-3': '0 1px 3px rgb(0 0 0 / 0.30), 0 4px 8px 3px rgb(0 0 0 / 0.15)',
-        'elev-4': '0 2px 3px rgb(0 0 0 / 0.30), 0 6px 10px 4px rgb(0 0 0 / 0.15)'
+        'elev-1': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'elev-2': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'elev-3': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'elev-4': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
       },
       transitionTimingFunction: {
         emphasized: 'cubic-bezier(0.2, 0, 0, 1)',

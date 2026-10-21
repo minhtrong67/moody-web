@@ -66,7 +66,7 @@ function SwipeableRow({ onEdit, onDelete, children }) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-m3-md h-full">
+    <div className="relative overflow-hidden rounded-md h-full">
       <div className="absolute inset-0 flex" aria-hidden="true">
         <div
           ref={editRef}

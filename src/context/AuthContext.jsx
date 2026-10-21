@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
+import { leaveGuest } from '../lib/session'
 
 const AuthContext = createContext(null)
 
@@ -29,12 +30,15 @@ export function AuthProvider({ children }) {
     setAuthError(null)
     try {
       await signInWithPopup(auth, googleProvider)
+      leaveGuest()
     } catch (err) {
       setAuthError(err)
     }
   }
 
+  // Đăng xuất → quay về trang giới thiệu (Gate chuyển hướng khi không còn người dùng / chế độ khách).
   async function logout() {
+    leaveGuest()
     await signOut(auth)
   }
 

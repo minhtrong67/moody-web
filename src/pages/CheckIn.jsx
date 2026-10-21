@@ -139,7 +139,6 @@ export default function CheckIn() {
         <TextField
           label={t('checkin.datetime')}
           type="datetime-local"
-          alwaysFloat
           value={datetime}
           onChange={(e) => setDatetime(e.target.value)}
           className="mb-8"
@@ -159,7 +158,7 @@ export default function CheckIn() {
                 <span
                   className="state w-14 h-14 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] rounded-full flex items-center justify-center text-2xl md:text-3xl lg:text-4xl transition-[transform,background-color,box-shadow] duration-200 ease-emphasized"
                   style={{
-                    background: selected ? m.color + '66' : 'rgb(var(--md-surface-container-highest))',
+                    background: selected ? m.color + '66' : 'var(--c-surface-container)',
                     boxShadow: selected ? `0 0 0 2px ${m.color}` : 'none',
                     transform: selected ? 'scale(1.1)' : 'scale(1)'
                   }}
@@ -202,7 +201,7 @@ export default function CheckIn() {
               )
             })}
 
-            <Link to="/manage/activities" className="chip state text-primary">
+            <Link to="/manage/activities" className="chip state text-brand">
               <Plus size={18} className="-ml-1" />
               {t('checkin.addNew')}
             </Link>
@@ -237,12 +236,12 @@ export default function CheckIn() {
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         aria-label={t('common.scrollTop')}
-        className={`state fixed right-4 md:right-6 z-20 w-14 h-14 rounded-m3-lg bg-surface-container-high text-primary shadow-elev-3 flex items-center justify-center transition-all duration-200 ${
+        className={`state fixed right-4 md:right-6 z-20 w-11 h-11 rounded-full bg-surface border border-outline-variant text-on-surface shadow-elev-3 flex items-center justify-center transition-all duration-200 ${
           showScrollTop ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
         }`}
         style={{ bottom: 'calc(var(--safe-bottom) + 1.5rem)' }}
       >
-        <ArrowUp size={28} />
+        <ArrowUp size={20} />
       </button>
     </div>
   )

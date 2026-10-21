@@ -1,23 +1,30 @@
 <div align="center">
 
-<img src="public/icons/icon-192.png" alt="Moody" width="96" height="96" />
+<img src="public/icons/icon-192.png" alt="Moody" width="88" height="88" />
 
 # Moody
 
-**Nhật ký tâm trạng hằng ngày — Daily mood journal**
+**Nhật ký tâm trạng tối giản, hiện đại**
 
-Check-in mỗi ngày, nhìn lại xu hướng cảm xúc và xuất báo cáo. Thiết kế theo **Material Design 3**, hỗ trợ **Tiếng Việt / English**, dùng được như một **PWA** trên cả điện thoại lẫn máy tính.
+Check-in mỗi ngày, nhìn lại xu hướng cảm xúc và xuất báo cáo. Giao diện sáng/tối, Tiếng Việt / English, cài đặt được như một PWA.
 
-🌐 [English](README.md) · **Tiếng Việt**
+[English](README.md) · **Tiếng Việt**
 
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3-38bdf8?logo=tailwindcss&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-10-ffca28?logo=firebase&logoColor=black)
-![Node](https://img.shields.io/badge/node-%3E%3D18-informational)
-![Open Source](https://img.shields.io/badge/open%20source-yes-brightgreen)
+![PWA](https://img.shields.io/badge/PWA-ready-0d9488)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+
+<br />
+
+<img src="screenshots/landing-desktop-light.png" alt="Moody — Trang giới thiệu" width="49%" />
+<img src="screenshots/landing-desktop-dark.png" alt="Moody — Trang giới thiệu (tối)" width="49%" />
+
+<img src="screenshots/desktop-light-dashboard.png" alt="Moody — Hôm nay (sáng)" width="49%" />
+<img src="screenshots/desktop-dark-stats.png" alt="Moody — Thống kê (tối)" width="49%" />
 
 </div>
 
@@ -28,92 +35,126 @@ Check-in mỗi ngày, nhìn lại xu hướng cảm xúc và xuất báo cáo. T
 - [Giới thiệu](#giới-thiệu)
 - [Ảnh chụp màn hình](#ảnh-chụp-màn-hình)
 - [Tính năng](#tính-năng)
-- [Cài đặt](#cài-đặt)
-- [Tech stack](#tech-stack)
-- [Development](#development)
-- [Build & triển khai](#build--triển-khai)
-- [Cấu trúc project](#cấu-trúc-project)
+- [Hệ thống thiết kế](#hệ-thống-thiết-kế)
+- [Trang giới thiệu và điều hướng](#trang-giới-thiệu-và-điều-hướng)
+- [Toast theo theme](#toast-theo-theme)
+- [PWA và màn hình splash](#pwa-và-màn-hình-splash)
+- [Bắt đầu](#bắt-đầu)
+- [Công nghệ](#công-nghệ)
+- [Cấu trúc dự án](#cấu-trúc-dự-án)
+- [Lệnh](#lệnh)
+- [Triển khai](#triển-khai)
+- [Trình duyệt hỗ trợ](#trình-duyệt-hỗ-trợ)
 - [Đóng góp](#đóng-góp)
-- [License](#license)
+- [Giấy phép](#giấy-phép)
 
 ## Giới thiệu
 
-Moody giúp bạn ghi lại tâm trạng chỉ trong vài giây: chọn một trong 5 mức cảm xúc, gắn hoạt động trong ngày và thêm ghi chú. Sau đó xem lại bằng danh sách, lịch tháng và các biểu đồ thống kê, hoặc xuất thành báo cáo PDF/PNG.
+Moody giúp bạn ghi lại tâm trạng trong vài giây: chọn 1 trong 5 mức cảm xúc, gắn các hoạt động trong ngày và thêm ghi chú. Xem lại dưới dạng danh sách, lịch tháng hoặc biểu đồ thống kê, hoặc xuất báo cáo PDF/PNG.
 
-> **Moody là dự án mã nguồn mở công khai (public open source).** Bạn có thể đọc, sử dụng, fork và cải thiện mã nguồn. Hoan nghênh issue và pull request.
-
-- **Dùng ngay không cần tài khoản** — chế độ khách lưu dữ liệu trong `localStorage`; đăng nhập Google để đồng bộ lên Firestore.
-- **Mobile-first, nhưng không chỉ cho mobile** — điện thoại dùng thanh điều hướng dưới; laptop/PC dùng menu cố định bên trái và bố cục nhiều cột.
-- **Cá nhân hóa** — đổi màu chủ đề (toàn bộ bảng màu Material 3 được sinh lại từ màu bạn chọn), sáng/tối, cỡ chữ và ngôn ngữ.
+- **Không cần tài khoản** — chế độ khách lưu dữ liệu trong `localStorage`; đăng nhập Google để đồng bộ qua Firestore.
+- **Ưu tiên di động, tốt trên máy tính** — thanh điều hướng dưới trên điện thoại, sidebar cố định và bố cục nhiều cột trên laptop.
+- **Riêng tư** — dữ liệu thuộc về bạn: xuất/nhập CSV, Excel hoặc JSON bất cứ lúc nào.
 
 ## Ảnh chụp màn hình
 
-| Máy tính — Hôm nay | Máy tính — Thống kê |
+| Desktop — Lịch sử (sáng) | Desktop — Cài đặt (tối) |
 |---|---|
-| ![Hôm nay](screenshots/image01.png) | ![Thống kê](screenshots/image02.png) |
+| ![History](screenshots/desktop-light-history.png) | ![Settings](screenshots/desktop-dark-settings.png) |
 
-| Máy tính — Lịch sử | Máy tính — Cài đặt (đổi màu chủ đề) |
-|---|---|
-| ![Lịch sử](screenshots/image03.png) | ![Cài đặt](screenshots/image04.png) |
-
-| Điện thoại — Hôm nay | Điện thoại — Check-in | Điện thoại — Thống kê (tối, EN) | Điện thoại — Lịch sử (tối, EN) |
-|---|---|---|---|
-| <img src="screenshots/image05.png" width="200" /> | <img src="screenshots/image06.png" width="200" /> | <img src="screenshots/image07.png" width="200" /> | <img src="screenshots/image08.png" width="200" /> |
+| Mobile — Đăng nhập | Mobile — Hôm nay | Mobile — Check-in | Mobile — Thống kê (tối) | Mobile — Lịch sử (tối) |
+|---|---|---|---|---|
+| <img src="screenshots/mobile-light-login.png" width="160" /> | <img src="screenshots/mobile-light-dashboard.png" width="160" /> | <img src="screenshots/mobile-light-checkin.png" width="160" /> | <img src="screenshots/mobile-dark-stats.png" width="160" /> | <img src="screenshots/mobile-dark-history.png" width="160" /> |
 
 ## Tính năng
 
 | Khu vực | Mô tả |
 |---|---|
-| **Hôm nay** | Lời chào, trạng thái check-in, dải 7 ngày, chuỗi ngày liên tiếp, mood trung bình tuần và các check-in gần đây |
-| **Check-in** | Chọn ngày giờ, 1 trong 5 mức tâm trạng, nhiều hoạt động (chip), ghi chú tự giãn dòng; sửa lại bất kỳ lúc nào |
-| **Lịch sử** | Dạng *Danh sách* (tìm kiếm, lọc thời gian/cảm xúc, sắp xếp, vuốt phải để sửa / vuốt trái để xóa) và dạng *Lịch tháng* (chạm ngày trống để tạo check-in) |
-| **Thống kê** | Theo Ngày / Tuần / Tháng / Năm: xu hướng mood, phân bố & tỉ lệ cảm xúc (cột + tròn), hoạt động thường gặp |
-| **Xuất báo cáo** | PDF hoặc ảnh PNG gồm chỉ số tổng quan, xu hướng, phân bố cảm xúc, **biểu đồ tròn tỉ lệ cảm xúc** và **biểu đồ phân bổ hoạt động** |
-| **Quản lý hoạt động** | Thêm / sửa / xóa, kéo-thả hoặc dùng mũi tên để sắp xếp |
-| **Quản lý tâm trạng** | Đổi emoji và tên hiển thị của 5 mức tâm trạng, khôi phục mặc định |
-| **Cài đặt** | Giao diện sáng/tối/hệ thống, **màu chủ đề**, cỡ chữ, **ngôn ngữ (VI/EN)**, cài đặt PWA, xuất/xóa dữ liệu |
+| **Hôm nay** | Lời chào, trạng thái check-in, dải 7 ngày, chuỗi ngày liên tiếp, điểm trung bình tuần và các check-in gần đây |
+| **Check-in** | Chọn ngày giờ, 1/5 cảm xúc, nhiều hoạt động và ghi chú tự giãn dòng; sửa được bất cứ lúc nào |
+| **Lịch sử** | Dạng danh sách (tìm kiếm, bộ lọc, sắp xếp, vuốt để sửa/xóa) và dạng lịch tháng |
+| **Thống kê** | Theo ngày / tuần / tháng / năm: xu hướng, tỉ lệ cảm xúc, hoạt động phổ biến |
+| **Báo cáo** | Xuất PDF hoặc PNG gồm chỉ số chính và biểu đồ tròn |
+| **Quản lý** | Hoạt động tùy chỉnh (kéo để sắp xếp) và đổi emoji / tên của 5 mức cảm xúc |
+| **Trang giới thiệu** | Trang giới thiệu responsive, hiệu ứng khi cuộn, giao diện sáng/tối/hệ thống, Anh/Việt và đầy đủ meta SEO / chia sẻ mạng xã hội |
+| **Cài đặt** | Giao diện sáng / tối / theo hệ thống, cỡ chữ, ngôn ngữ, trang mở đầu, cài PWA, xuất / nhập dữ liệu |
 
-Điểm nhấn kỹ thuật:
+## Hệ thống thiết kế
 
-- **Material Design 3** đầy đủ: color roles, shape, elevation, state layer, top app bar, navigation bar/drawer, FAB, dialog, snackbar, segmented button, switch, chip, outlined text field.
-- **Màu chủ đề tùy chỉnh**: chọn màu gợi ý hoặc bất kỳ màu nào; bảng màu sáng/tối được sinh bằng [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities) và áp dụng trước khi vẽ trang (không bị nháy màu). Màu mặc định là xanh dương (seed `#769CDF`).
-- **Responsive**: điện thoại → tablet → laptop → màn hình lớn.
-- **Hiệu năng**: code-splitting theo trang, tách chunk `react` / `firebase` / `charts`, thư viện PDF chỉ nạp khi xuất báo cáo, skeleton loading đúng hình dạng nội dung.
-- **SEO & chia sẻ**: meta description, canonical, Open Graph, Twitter Card, JSON-LD, `robots.txt`, ảnh xem trước 1200×630.
-- **PWA**: cài đặt như app, hoạt động offline với service worker.
+Moody theo phong cách **modern minimalist**: bề mặt phẳng, viền mảnh thay cho đổ bóng nặng, nhiều khoảng trắng, một màu nhấn teal, chữ Inter và icon nét mảnh ([Lucide](https://lucide.dev)).
 
-## Cài đặt
+**Nguồn màu duy nhất: [`src/styles/theme.css`](src/styles/theme.css)** (teal-zinc, token `oklch`, sáng + `.dark`). Không nơi nào khác khai báo màu.
+
+```
+theme.css  ──►  index.css (--c-* roles)  ──►  tailwind.config.js  ──►  bg-surface · text-on-surface · bg-primary/10 …
+(oklch tokens)   derived with color-mix()       maps roles to classes
+```
+
+- Muốn đổi màu cả app, chỉ cần thay `theme.css` — không phải sửa file nào khác.
+- `--c-brand` là màu nhấn dùng cho chữ/icon: bằng `--primary` ở chế độ sáng và teal sáng hơn (`--chart-2`) ở chế độ tối để vẫn đọc rõ trên nền tối. Nút nền đặc dùng `--primary` đúng như theme.
+- Bo góc suy ra từ `--radius`; màu biểu đồ đọc từ CSS được quy đổi sang hex qua canvas (`readRole()` trong `src/lib/theme.js`).
+
+## Trang giới thiệu và điều hướng
+
+| Trạng thái | Hành vi |
+|---|---|
+| Lần đầu / đã đăng xuất | Mở trang giới thiệu (`/#/welcome`). **Đăng nhập** → `/#/login`; **Bắt đầu** → chế độ khách. |
+| Đã đăng nhập hoặc chế độ khách | Những lần sau vào thẳng ứng dụng, bỏ qua trang giới thiệu. |
+| Cài đặt → Giới thiệu | Mở lại trang giới thiệu khi cần. |
+| Đăng xuất | Quay về trang giới thiệu. |
+
+Các thẻ chia sẻ (Open Graph, Twitter Card, JSON-LD, canonical, hreflang, `robots.txt`, `sitemap.xml`) trỏ tới URL triển khai **https://moody-mood-tracker.vercel.app/**.
+
+## Toast theo theme
+
+Toast theo theme (nền popover + viền mảnh, các biến thể `success` / `info` / `error`) ở cả sáng và tối.
+
+## PWA và màn hình splash
+
+Màn hình splash khi mở app khớp với theme hiện tại trên cả hai nền tảng:
+
+| Nền tảng | Cách hoạt động |
+|---|---|
+| **Android / Chrome** | Hệ điều hành vẽ splash từ `background_color` của manifest, vốn chỉ nhận **một** màu. Moody có hai manifest — `public/manifest.webmanifest` (trắng) và `public/manifest-dark.webmanifest` (`#09090b`) — và đổi `<link rel="manifest">` cùng `<meta name="theme-color">` theo theme (script inline trong `index.html` chạy trước khi vẽ, sau đó là `syncPwaChrome()` trong `src/lib/theme.js`). Chrome đọc lại manifest khi cập nhật app đã cài nên splash sẽ theo theme sau một thời gian ngắn. |
+| **iOS / Safari** | Các thẻ `apple-touch-startup-image` kèm media query `prefers-color-scheme` (38 ảnh: 19 thiết bị × sáng/tối, dọc) được `vite.config.js` chèn lúc build. iOS theo giao diện **hệ thống**. |
+| **Màn hình khởi động trong app** | Loader tĩnh theo theme trong `index.html` hiện ngay và chuyển sang React không bị nháy. |
+
+Giới hạn: Android chỉ nhận thay đổi sau khi Chrome làm mới app đã cài; trên iOS splash theo theme hệ thống (không theo lựa chọn trong app); chưa tạo ảnh splash ngang.
+
+Tạo lại ảnh iOS sau khi đổi icon hoặc màu: `npm run generate:splash` (màu/thiết bị nằm trong `scripts/splash-devices.mjs`).
+
+## Bắt đầu
 
 Yêu cầu: **Node.js ≥ 18** và npm.
 
 ```bash
-git clone <repo-url> moody
+git clone https://github.com/minhtrong67/Moody-MoodTracker.git moody
 cd moody
 npm install
-cp .env.example .env     # rồi điền thông tin Firebase (xem bên dưới)
+cp .env.example .env     # rồi điền cấu hình Firebase
 npm run dev
 ```
 
-Mở `http://localhost:5173`. **Không cấu hình Firebase vẫn chạy được** — ứng dụng dùng chế độ khách (dữ liệu lưu cục bộ).
+Mở `http://localhost:5173`. **Chạy được khi chưa có Firebase** — app tự dùng chế độ khách (dữ liệu cục bộ).
 
 ### Cấu hình Firebase (tùy chọn)
 
-1. Tạo project tại [Firebase Console](https://console.firebase.google.com).
+1. Tạo project trong [Firebase Console](https://console.firebase.google.com).
 2. **Authentication → Sign-in method** → bật **Google**.
-3. **Firestore Database** → tạo database.
-4. **Project settings → Your apps** → tạo Web app và copy từng giá trị vào `.env`:
+3. **Firestore Database** → tạo cơ sở dữ liệu.
+4. **Project settings → Your apps** → tạo Web app và chép các giá trị vào `.env`:
 
    | Biến | Ý nghĩa |
    |---|---|
-   | `VITE_FIREBASE_API_KEY` | API key của Web app |
+   | `VITE_FIREBASE_API_KEY` | Web API key |
    | `VITE_FIREBASE_AUTH_DOMAIN` | `your-project.firebaseapp.com` |
-   | `VITE_FIREBASE_PROJECT_ID` | ID project |
+   | `VITE_FIREBASE_PROJECT_ID` | Project ID |
    | `VITE_FIREBASE_STORAGE_BUCKET` | `your-project.appspot.com` |
    | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Sender ID |
    | `VITE_FIREBASE_APP_ID` | App ID |
-   | `VITE_SITE_URL` | URL triển khai (không có `/` cuối) — dùng cho canonical / Open Graph / Twitter Card |
+   | `VITE_SITE_URL` | URL triển khai, không có `/` cuối (canonical / Open Graph) |
 
-5. Đặt **Firestore Security Rules** để mỗi người chỉ đọc/ghi dữ liệu của mình:
+5. Giới hạn Firestore để mỗi người chỉ truy cập dữ liệu của mình:
 
    ```
    rules_version = '2';
@@ -126,81 +167,76 @@ Mở `http://localhost:5173`. **Không cấu hình Firebase vẫn chạy đượ
    }
    ```
 
-`.env` đã nằm trong `.gitignore`. **Tuyệt đối không commit khóa Firebase hay bí mật của bạn** lên repo public.
+> ⚠️ `.env` đã nằm trong `.gitignore`. **Không bao giờ commit khóa/bí mật thật** lên repo công khai.
 
-## Tech stack
+## Công nghệ
 
-| Mảng | Công nghệ |
+| Khu vực | Công nghệ |
 |---|---|
 | UI | React 18, React Router 6 (`HashRouter`) |
-| Build | Vite 5, `vite-plugin-pwa` (Workbox) |
-| Styling | Tailwind CSS 3 + CSS variables theo Material Design 3 |
-| Màu động | `@material/material-color-utilities` |
-| Icon & font | `react-icons` (Material Design icons), Roboto (`@fontsource/roboto`, tự host, có subset tiếng Việt) |
+| Build / PWA | Vite 5, `vite-plugin-pwa` (Workbox), `sharp` (ảnh splash) |
+| Styling | Tailwind CSS 3 + token theme `oklch` |
+| Chữ & icon | Inter Variable (`@fontsource-variable/inter`, có tiếng Việt), `lucide-react` |
 | Backend | Firebase Authentication (Google) + Cloud Firestore |
-| Biểu đồ | Recharts |
-| Báo cáo | html2canvas + jsPDF (nạp khi cần) |
-| i18n | Bộ dịch nhẹ tự viết (`src/i18n`) — Tiếng Việt & English |
+| Charts | Recharts |
+| Báo cáo | `html2canvas-pro` + jsPDF (tải khi cần) |
+| Nhập / xuất | `read-excel-file`, `write-excel-file`, `fflate` |
+| i18n | Bộ dịch nhẹ tự viết (`src/i18n`) |
 
-## Development
+## Cấu trúc dự án
+
+```
+├── index.html                  # Meta SEO / Open Graph, script áp theme, màn hình khởi động
+├── vite.config.js              # Vite + PWA + thẻ splash iOS + tách chunk
+├── tailwind.config.js          # Ánh xạ vai trò --c-* thành class Tailwind
+├── public/
+│   ├── manifest.webmanifest        # manifest sáng
+│   ├── manifest-dark.webmanifest   # manifest tối (màu splash)
+│   ├── sitemap.xml · robots.txt
+│   ├── landing/                    # ảnh minh họa trang giới thiệu (webp, sáng/tối)
+│   ├── splash/                     # ảnh splash iOS (sinh tự động)
+│   └── icons/ · favicon · og-image.png
+├── scripts/                    # generate-splash.mjs · splash-devices.mjs
+├── screenshots/                # ảnh dùng trong README
+└── src/
+    ├── styles/theme.css        # ★ token màu (nguồn duy nhất)
+    ├── index.css               # vai trò suy ra, typography, nút, ô nhập, chuyển động
+    ├── pages/Landing.jsx · Login.jsx   # trang giới thiệu · đăng nhập
+    ├── lib/                    # session · theme · moodConfig · dateUtils · statsUtils · reportGenerator · dataTransfer
+    ├── components/             # AppShell · Sidebar · Dialog · TextField · Switch · Login …
+    ├── pages/                  # Dashboard · CheckIn · History · Statistics · Settings · Manage*
+    ├── context/ · hooks/       # Auth, MoodEntries, Activities, Moods, Toast
+    └── i18n/                   # vi.js · en.js
+```
+
+**Mô hình dữ liệu** — `users/{uid}/entries/{id}`: `date` (`YYYY-MM-DD`), `time` (ISO), `mood` (`great|good|okay|sad|angry`), `score` (1–5), `activities[]`, `note`. Hoạt động / cảm xúc tùy chỉnh nằm ở `users/{uid}/meta/*`; chế độ khách dùng `localStorage`.
+
+## Lệnh
 
 | Lệnh | Mô tả |
 |---|---|
 | `npm run dev` | Chạy dev server (HMR) |
-| `npm run build` | Build production vào `dist/` |
-| `npm run preview` | Chạy thử bản build |
+| `npm run build` | Build production ra `dist/` |
+| `npm run preview` | Xem thử bản build |
+| `npm run generate:splash` | Tạo lại ảnh splash iOS |
 
-Một số điểm cần biết khi phát triển:
+Thêm chữ: thêm key vào **cả** `src/i18n/en.js` và `src/i18n/vi.js`, rồi dùng `const {{ t }} = useI18n()`.
 
-- **Đổi màu mặc định**: sửa các biến `--md-*` (sáng + tối) trong [`src/index.css`](src/index.css) — có thể xuất bộ mới từ [Material Theme Builder](https://material-foundation.github.io/material-theme-builder/) — cùng `DEFAULT_SEED` trong [`src/lib/theme.js`](src/lib/theme.js), `theme_color` trong `vite.config.js` và icon trong `public/`.
-- **Thêm ngôn ngữ / chuỗi mới**: thêm khóa vào `src/i18n/vi.js` và `src/i18n/en.js`, dùng `const { t } = useI18n()` → `t('khoa')`. Khóa thiếu sẽ rơi về tiếng Việt.
-- **Biểu đồ** dùng màu literal đọc từ CSS variable hiện hành (`readRole()` trong `theme.js`) vì SVG của một số trình duyệt không resolve `var()` ổn định.
-- **Ngày "hôm nay"** luôn tính theo giờ địa phương của thiết bị (không dùng `toISOString()` theo UTC).
+## Triển khai
 
-## Build & triển khai
+Triển khai thư mục `dist/` lên bất kỳ static host nào (Vercel, Netlify, Cloudflare Pages, Firebase Hosting). Nhờ `HashRouter` nên không cần rewrite SPA. Đặt `VITE_SITE_URL` trước khi build và thêm domain vào Firebase **Authentication → Settings → Authorized domains** để đăng nhập Google.
 
-```bash
-npm run build
-```
+## Trình duyệt hỗ trợ
 
-Deploy thư mục `dist/` lên bất kỳ static host nào (Firebase Hosting, Vercel, Netlify, Cloudflare Pages…). Vì dùng `HashRouter` nên không cần cấu hình rewrite cho SPA. Nhớ đặt `VITE_SITE_URL` trước khi build để thẻ canonical / Open Graph trỏ đúng domain.
-
-## Cấu trúc project
-
-```
-├── index.html                  # Meta SEO / Open Graph / Twitter / JSON-LD, màn hình khởi động
-├── vite.config.js              # Vite + PWA manifest + tách chunk
-├── tailwind.config.js          # Ánh xạ color roles Material 3, shape, elevation
-├── public/                     # favicon, icon PWA, og-image, robots.txt
-├── screenshots/                # Ảnh dùng trong README (image01 … image08)
-└── src/
-    ├── App.jsx · main.jsx
-    ├── index.css               # Color roles (--md-*), typography, state layer, component class
-    ├── i18n/                   # vi.js · en.js · index.jsx (I18nProvider, useI18n)
-    ├── context/                # Auth, MoodEntries, Activities, Moods, Toast
-    ├── hooks/                  # useMoodEntries, useActivities, useMoods, useInstallPrompt, useIsDark
-    ├── lib/                    # moodConfig, dateUtils, statsUtils, reportGenerator, theme
-    ├── components/             # AppShell, Sidebar, Dialog, ConfirmDialog, TextField, Switch,
-    │                           # SegmentedButton, SwipeableRow, PageSkeleton, icons, Login…
-    └── pages/                  # Dashboard, CheckIn, History, Statistics, Settings,
-                                # ManageActivities, ManageMoods
-```
-
-**Mô hình dữ liệu** — `users/{uid}/entries/{id}`: `date` (`YYYY-MM-DD`), `time` (ISO), `mood` (`great|good|okay|sad|angry`), `score` (1–5), `activities[]`, `note`. Hoạt động và tên/emoji tâm trạng tùy chỉnh nằm ở `users/{uid}/meta/activities` và `users/{uid}/meta/moods`; ở chế độ khách mọi thứ lưu trong `localStorage`.
+Trình duyệt hiện đại. Theme dùng `oklch()` và `color-mix()`: Chrome / Edge 111+, Safari 16.4+, Firefox 113+.
 
 ## Đóng góp
 
-Moody là dự án mã nguồn mở và rất hoan nghênh đóng góp:
+1. Fork repo và tạo nhánh: `git checkout -b feat/ten-tinh-nang`.
+2. Bám theo hệ thống thiết kế: dùng token của theme (`bg-surface`, `text-on-surface-variant`, `text-brand`…), không hard-code màu.
+3. Đảm bảo `npm run build` chạy được và thêm chữ UI cho cả hai ngôn ngữ.
+4. Mở pull request mô tả thay đổi và lý do.
 
-1. Fork repo và tạo nhánh mới: `git checkout -b feat/tinh-nang-cua-ban`.
-2. Thực hiện thay đổi và đảm bảo `npm run build` chạy thành công.
-3. Nếu thêm chữ hiển thị trên giao diện, hãy thêm vào **cả** `src/i18n/en.js` và `src/i18n/vi.js`.
-4. Commit và mở pull request mô tả thay đổi và lý do.
+## Giấy phép
 
-Gặp lỗi hoặc có ý tưởng? Hãy mở một issue.
-
-## License
-
-Phát hành mã nguồn mở theo **giấy phép MIT** © 2026 minhtrong67. Bạn được phép sử dụng, sao chép, chỉnh sửa và phân phối dự án này, miễn là giữ nguyên thông báo bản quyền và nội dung giấy phép.
-
-> Ghi chú cho người duy trì: thêm file `LICENSE` chứa nội dung giấy phép MIT ở thư mục gốc để GitHub nhận diện license.
+Phát hành theo [Giấy phép MIT](LICENSE) © 2026 minhtrong67.

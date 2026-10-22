@@ -22,9 +22,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'icons/*.png'],
-      // Manifest do plugin sinh ra và tự chèn <link rel="manifest">. Đây là nơi DUY NHẤT đặt màu mặc định cho PWA:
-      // khi mở app từ màn hình chính, hệ điều hành chỉ hiện logo (icon manifest) trên background_color —
-      // không có ảnh splash riêng và không kiểm tra giao diện sáng/tối.
       manifest: {
         id: '/',
         name: 'Moody — Nhật ký tâm trạng',

@@ -5,7 +5,7 @@
 /* =====================================================================
    Moody — Modern Minimalist
    ---------------------------------------------------------------------
-   Nguồn màu duy nhất: src/styles/theme.css (teal-zinc, token dạng oklch,
+   Nguồn màu duy nhất: src/styles/theme.css (teal-500 + nền stone, token dạng oklch,
    được import trong main.jsx). File này KHÔNG khai báo màu mới — chỉ suy ra
    các "vai trò" (--c-*) từ token của theme.css để Tailwind và component dùng.
    Muốn đổi màu cả app: thay theme.css, không cần sửa gì ở đây.
@@ -36,9 +36,9 @@
   /* Thương hiệu (teal) */
   --c-primary: var(--primary);
   --c-on-primary: var(--primary-foreground);
-  --c-brand: var(--primary); /* màu dùng cho chữ/icon trên nền thường */
-  --c-primary-container: color-mix(in oklab, var(--primary) 9%, var(--background));
-  --c-on-primary-container: var(--primary);
+  --c-brand: var(--brand); /* màu dùng cho chữ/icon trên nền thường (sáng: teal-700 · tối: teal-500) */
+  --c-primary-container: color-mix(in oklab, var(--primary) 12%, var(--background));
+  --c-on-primary-container: var(--brand);
 
   /* Trung tính (secondary) */
   --c-secondary: var(--muted-foreground);
@@ -67,7 +67,7 @@
   --c-popover-foreground: var(--popover-foreground);
 
   /* Thành phần */
-  --c-segment-active: var(--background);
+  --c-segment-active: var(--card);
   --c-switch-off: color-mix(in oklab, var(--foreground) 16%, var(--background));
   --c-scrim: oklch(0 0 0 / 0.5);
 }
@@ -80,13 +80,13 @@
   --c-surface-container-high: var(--muted);
   --c-surface-container-highest: color-mix(in oklab, var(--muted) 88%, var(--foreground));
 
-  /* --primary của theme tối là teal đậm (hợp làm nền nút); chữ/icon cần teal sáng hơn để đủ tương phản */
-  --c-brand: var(--chart-2);
-  --c-primary-container: color-mix(in oklab, var(--chart-2) 14%, var(--background));
-  --c-on-primary-container: var(--chart-2);
+  --c-primary-container: color-mix(in oklab, var(--primary) 16%, var(--background));
+
+  /* Snackbar tối đảo sang nền sáng → nút hành động cần teal đậm để đủ tương phản */
+  --c-inverse-primary: var(--chart-4);
 
   --c-error-container: color-mix(in oklab, var(--destructive) 16%, var(--background));
-  --c-on-error: oklch(0.141 0.005 285.823);
+  --c-on-error: var(--n-950);
 
   --c-segment-active: color-mix(in oklab, var(--muted) 82%, var(--foreground));
   --c-switch-off: color-mix(in oklab, var(--foreground) 22%, var(--background));
@@ -112,6 +112,10 @@ body {
 
 input, textarea, select, button {
   color: inherit;
+}
+
+a, button, [role='button'], input, select, textarea, label {
+  touch-action: manipulation;
 }
 
 button {
@@ -291,7 +295,7 @@ select option {
     gap: 4px;
     font-size: 0.75rem;
     box-shadow: none;
-    background: var(--c-surface-container);
+    background: var(--c-surface-container-high);
   }
 
   /* ---------- Form field: nhãn phía trên, ô nhập phẳng ---------- */
@@ -315,7 +319,7 @@ select option {
     height: 44px;
     padding: 0 12px;
     border-radius: calc(var(--radius) - 2px);
-    background: var(--c-surface);
+    background: var(--card);
     color: var(--c-on-surface);
     font-size: 0.9375rem;
     border: 1px solid var(--c-outline);
@@ -409,7 +413,10 @@ select option {
   }
 
   /* ---------- Dialog scrim ---------- */
-  .scrim { background: var(--c-scrim); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+  .scrim { background: var(--c-scrim); }
+  @media (hover: hover) and (pointer: fine) {
+    .scrim { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+  }
 
   /* ---------- Progress ---------- */
   .spinner { animation: spin 1.4s linear infinite; }
@@ -426,27 +433,19 @@ select option {
 /* =====================================================================
    Motion
    ===================================================================== */
+/* fill-mode `backwards`: sau khi chạy xong phần tử trở về trạng thái bình thường (không còn transform/layer thừa,
+   không tạo containing block cho phần tử fixed bên trong). */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
-.page-enter { animation: fadeInUp 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
+.page-enter { animation: fadeInUp 0.3s cubic-bezier(0.05, 0.7, 0.1, 1) backwards; }
 
 @keyframes popIn {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
-.pop-in { animation: popIn 0.2s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
-
-@keyframes sheetUp {
-  from { opacity: 0; transform: translateY(32px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+.pop-in { animation: popIn 0.2s cubic-bezier(0.05, 0.7, 0.1, 1) backwards; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -482,7 +481,7 @@ select option {
   from { opacity: 0; transform: translateY(12px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
-.toast-enter { animation: toastIn 0.28s cubic-bezier(0.05, 0.7, 0.1, 1) both; }
+.toast-enter { animation: toastIn 0.25s cubic-bezier(0.05, 0.7, 0.1, 1) backwards; }
 
 /* =====================================================================
    Landing — hiệu ứng xuất hiện khi cuộn & chuyển động nền
@@ -494,7 +493,7 @@ select option {
     transform 0.7s cubic-bezier(0.05, 0.7, 0.1, 1) var(--d, 0s);
   will-change: opacity, transform;
 }
-.reveal.is-visible { opacity: 1; transform: none; }
+.reveal.is-visible { opacity: 1; transform: none; will-change: auto; }
 .reveal-scale { transform: translateY(22px) scale(0.97); }
 
 @keyframes float {
@@ -517,6 +516,11 @@ select option {
   background-clip: text;
   color: transparent;
   animation: pan 7s linear infinite;
+}
+
+@media (max-width: 767px) {
+  .text-gradient { animation: none; }
+  .blob { animation: none; }
 }
 
 @keyframes growBar { from { transform: scaleY(0); } to { transform: scaleY(1); } }

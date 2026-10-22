@@ -38,7 +38,7 @@ Check-in mỗi ngày, nhìn lại xu hướng cảm xúc và xuất báo cáo. G
 - [Hệ thống thiết kế](#hệ-thống-thiết-kế)
 - [Trang giới thiệu và điều hướng](#trang-giới-thiệu-và-điều-hướng)
 - [Toast theo theme](#toast-theo-theme)
-- [PWA và màn hình splash](#pwa-và-màn-hình-splash)
+- [PWA](#pwa)
 - [Bắt đầu](#bắt-đầu)
 - [Công nghệ](#công-nghệ)
 - [Cấu trúc dự án](#cấu-trúc-dự-án)
@@ -83,7 +83,7 @@ Moody giúp bạn ghi lại tâm trạng trong vài giây: chọn 1 trong 5 mứ
 
 Moody theo phong cách **modern minimalist**: bề mặt phẳng, viền mảnh thay cho đổ bóng nặng, nhiều khoảng trắng, một màu nhấn teal, chữ Inter và icon nét mảnh ([Lucide](https://lucide.dev)).
 
-**Nguồn màu duy nhất: [`src/styles/theme.css`](src/styles/theme.css)** (teal-zinc, token `oklch`, sáng + `.dark`). Không nơi nào khác khai báo màu.
+**Nguồn màu duy nhất: [`src/styles/theme.css`](src/styles/theme.css)** (teal-500 chủ đạo + nền stone, token `oklch`, sáng + `.dark`). Không nơi nào khác khai báo màu.
 
 ```
 theme.css  ──►  index.css (--c-* roles)  ──►  tailwind.config.js  ──►  bg-surface · text-on-surface · bg-primary/10 …
@@ -109,19 +109,9 @@ Các thẻ chia sẻ (Open Graph, Twitter Card, JSON-LD, canonical, hreflang, `r
 
 Toast theo theme (nền popover + viền mảnh, các biến thể `success` / `info` / `error`) ở cả sáng và tối.
 
-## PWA và màn hình splash
+## PWA
 
-Màn hình splash khi mở app khớp với theme hiện tại trên cả hai nền tảng:
-
-| Nền tảng | Cách hoạt động |
-|---|---|
-| **Android / Chrome** | Hệ điều hành vẽ splash từ `background_color` của manifest, vốn chỉ nhận **một** màu. Moody có hai manifest — `public/manifest.webmanifest` (trắng) và `public/manifest-dark.webmanifest` (`#09090b`) — và đổi `<link rel="manifest">` cùng `<meta name="theme-color">` theo theme (script inline trong `index.html` chạy trước khi vẽ, sau đó là `syncPwaChrome()` trong `src/lib/theme.js`). Chrome đọc lại manifest khi cập nhật app đã cài nên splash sẽ theo theme sau một thời gian ngắn. |
-| **iOS / Safari** | Các thẻ `apple-touch-startup-image` kèm media query `prefers-color-scheme` (38 ảnh: 19 thiết bị × sáng/tối, dọc) được `vite.config.js` chèn lúc build. iOS theo giao diện **hệ thống**. |
-| **Màn hình khởi động trong app** | Loader tĩnh theo theme trong `index.html` hiện ngay và chuyển sang React không bị nháy. |
-
-Giới hạn: Android chỉ nhận thay đổi sau khi Chrome làm mới app đã cài; trên iOS splash theo theme hệ thống (không theo lựa chọn trong app); chưa tạo ảnh splash ngang.
-
-Tạo lại ảnh iOS sau khi đổi icon hoặc màu: `npm run generate:splash` (màu/thiết bị nằm trong `scripts/splash-devices.mjs`).
+Manifest do `vite-plugin-pwa` sinh ra (xem `vite.config.js`) và đây là nơi duy nhất đặt màu mặc định cho PWA (`theme_color: '#00bba7'`, `background_color: '#fafaf9'`). Khi mở app từ màn hình chính, hệ điều hành chỉ hiện logo app trên nền mặc định đó — không có ảnh splash, không có manifest sáng/tối và không kiểm tra theme lúc khởi động. `index.html` chỉ có màn hình khởi động chứa logo, chuyển sang React liền mạch.
 
 ## Bắt đầu
 
@@ -174,7 +164,7 @@ Mở `http://localhost:5173`. **Chạy được khi chưa có Firebase** — app
 | Khu vực | Công nghệ |
 |---|---|
 | UI | React 18, React Router 6 (`HashRouter`) |
-| Build / PWA | Vite 5, `vite-plugin-pwa` (Workbox), `sharp` (ảnh splash) |
+| Build / PWA | Vite 5, `vite-plugin-pwa` (Workbox) |
 | Styling | Tailwind CSS 3 + token theme `oklch` |
 | Chữ & icon | Inter Variable (`@fontsource-variable/inter`, có tiếng Việt), `lucide-react` |
 | Backend | Firebase Authentication (Google) + Cloud Firestore |
@@ -187,16 +177,12 @@ Mở `http://localhost:5173`. **Chạy được khi chưa có Firebase** — app
 
 ```
 ├── index.html                  # Meta SEO / Open Graph, script áp theme, màn hình khởi động
-├── vite.config.js              # Vite + PWA + thẻ splash iOS + tách chunk
+├── vite.config.js              # Vite + PWA (manifest) + tách chunk
 ├── tailwind.config.js          # Ánh xạ vai trò --c-* thành class Tailwind
 ├── public/
-│   ├── manifest.webmanifest        # manifest sáng
-│   ├── manifest-dark.webmanifest   # manifest tối (màu splash)
 │   ├── sitemap.xml · robots.txt
 │   ├── landing/                    # ảnh minh họa trang giới thiệu (webp, sáng/tối)
-│   ├── splash/                     # ảnh splash iOS (sinh tự động)
 │   └── icons/ · favicon · og-image.png
-├── scripts/                    # generate-splash.mjs · splash-devices.mjs
 ├── screenshots/                # ảnh dùng trong README
 └── src/
     ├── styles/theme.css        # ★ token màu (nguồn duy nhất)
@@ -218,7 +204,6 @@ Mở `http://localhost:5173`. **Chạy được khi chưa có Firebase** — app
 | `npm run dev` | Chạy dev server (HMR) |
 | `npm run build` | Build production ra `dist/` |
 | `npm run preview` | Xem thử bản build |
-| `npm run generate:splash` | Tạo lại ảnh splash iOS |
 
 Thêm chữ: thêm key vào **cả** `src/i18n/en.js` và `src/i18n/vi.js`, rồi dùng `const {{ t }} = useI18n()`.
 

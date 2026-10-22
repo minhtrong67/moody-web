@@ -1,99 +1,62 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- ===== SEO cơ bản ===== -->
-    <title>Moody — Nhật ký tâm trạng hằng ngày</title>
-    <meta
-      name="description"
-      content="Moody là ứng dụng nhật ký tâm trạng: check-in mỗi ngày, theo dõi xu hướng, xem thống kê và xuất báo cáo PDF/PNG. Miễn phí, hỗ trợ cài đặt như app (PWA)."
-    />
-    <meta
-      name="keywords"
-      content="mood tracker, nhật ký tâm trạng, theo dõi cảm xúc, mood journal, daily check-in, sức khỏe tinh thần, mental wellbeing, PWA"
-    />
-    <meta name="author" content="minhtrong67" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="application-name" content="Moody" />
-    <meta name="generator" content="Vite + React" />
-    <link rel="canonical" href="https://moody-mood-tracker.vercel.app/" />
-    <link
-      rel="alternate"
-      hreflang="vi"
-      href="https://moody-mood-tracker.vercel.app/"
-    />
-    <link
-      rel="alternate"
-      hreflang="en"
-      href="https://moody-mood-tracker.vercel.app/"
-    />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://moody-mood-tracker.vercel.app/"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- ===== Open Graph (Facebook, Zalo, LinkedIn, Messenger…) ===== -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Moody" />
-    <meta property="og:title" content="Moody — Nhật ký tâm trạng hằng ngày" />
-    <meta
-      property="og:description"
-      content="Check-in tâm trạng mỗi ngày, theo dõi xu hướng và xuất báo cáo. Daily mood journal with trends, statistics and reports."
-    />
-    <meta property="og:url" content="https://moody-mood-tracker.vercel.app/" />
-    <meta
-      property="og:image"
-      content="https://moody-mood-tracker.vercel.app/og-image.png"
-    />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="Moody — ứng dụng nhật ký tâm trạng"
-    />
-    <meta property="og:locale" content="vi_VN" />
-    <meta property="og:locale:alternate" content="en_US" />
+  <!-- ===== SEO cơ bản ===== -->
+  <title>Moody — Nhật ký tâm trạng hằng ngày</title>
+  <meta name="description"
+    content="Moody là ứng dụng nhật ký tâm trạng: check-in mỗi ngày, theo dõi xu hướng, xem thống kê và xuất báo cáo PDF/PNG. Miễn phí, hỗ trợ cài đặt như app (PWA)." />
+  <meta name="keywords"
+    content="mood tracker, nhật ký tâm trạng, theo dõi cảm xúc, mood journal, daily check-in, sức khỏe tinh thần, mental wellbeing, PWA" />
+  <meta name="author" content="minhtrong67" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="application-name" content="Moody" />
+  <meta name="generator" content="Vite + React" />
+  <link rel="canonical" href="https://moody-mood-tracker.vercel.app/" />
+  <link rel="alternate" hreflang="vi" href="https://moody-mood-tracker.vercel.app/" />
+  <link rel="alternate" hreflang="en" href="https://moody-mood-tracker.vercel.app/" />
+  <link rel="alternate" hreflang="x-default" href="https://moody-mood-tracker.vercel.app/" />
 
-    <!-- ===== Twitter / X Card ===== -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Moody — Nhật ký tâm trạng hằng ngày" />
-    <meta
-      name="twitter:description"
-      content="Check-in tâm trạng mỗi ngày, theo dõi xu hướng và xuất báo cáo."
-    />
-    <meta
-      name="twitter:image"
-      content="https://moody-mood-tracker.vercel.app/og-image.png"
-    />
-    <meta
-      name="twitter:image:alt"
-      content="Moody — ứng dụng nhật ký tâm trạng"
-    />
+  <!-- ===== Open Graph (Facebook, Zalo, LinkedIn, Messenger…) ===== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Moody" />
+  <meta property="og:title" content="Moody — Nhật ký tâm trạng hằng ngày" />
+  <meta property="og:description"
+    content="Check-in tâm trạng mỗi ngày, theo dõi xu hướng và xuất báo cáo. Daily mood journal with trends, statistics and reports." />
+  <meta property="og:url" content="https://moody-mood-tracker.vercel.app/" />
+  <meta property="og:image" content="https://moody-mood-tracker.vercel.app/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Moody — ứng dụng nhật ký tâm trạng" />
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:locale:alternate" content="en_US" />
 
-    <!-- ===== PWA / thiết bị ===== -->
-    <!-- theme-color & manifest được script bên dưới chọn lại theo theme đang dùng (sáng/tối). -->
-    <meta name="theme-color" content="#ffffff" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Moody" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="format-detection" content="telephone=no" />
-    <link rel="icon" href="/favicon.ico" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <!-- ===== Twitter / X Card ===== -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Moody — Nhật ký tâm trạng hằng ngày" />
+  <meta name="twitter:description" content="Check-in tâm trạng mỗi ngày, theo dõi xu hướng và xuất báo cáo." />
+  <meta name="twitter:image" content="https://moody-mood-tracker.vercel.app/og-image.png" />
+  <meta name="twitter:image:alt" content="Moody — ứng dụng nhật ký tâm trạng" />
 
-    <!-- ===== Dữ liệu có cấu trúc (JSON-LD) cho công cụ tìm kiếm ===== -->
-    <script type="application/ld+json">
+  <!-- ===== PWA / thiết bị ===== -->
+  <!-- Manifest (tên, icon, theme_color, background_color mặc định) do vite-plugin-pwa sinh từ vite.config.js. -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Moody" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- ===== Dữ liệu có cấu trúc (JSON-LD) cho công cụ tìm kiếm ===== -->
+  <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -108,123 +71,16 @@
       }
     </script>
 
-    <!-- Áp theme NGAY khi trang bắt đầu render (trước khi tải CSS/JS) để không bị nháy nền trắng
-         khi người dùng đang dùng giao diện tối. Logic phải khớp với src/lib/theme.js
-         (kể cả màu #ffffff / #09090b = --background của src/styles/theme.css). -->
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem("theme");
-          if (stored !== "light" && stored !== "dark") stored = "system";
-          var dark =
-            stored === "dark" ||
-            (stored === "system" &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches);
-          var root = document.documentElement;
-          if (dark) root.classList.add("dark");
-          var scale = localStorage.getItem("fontScale");
-          if (scale === "0.9" || scale === "1" || scale === "1.15")
-            root.style.setProperty("--font-scale", scale);
-          // Thanh trạng thái + manifest (quyết định màu splash của Android khi cài / cập nhật app).
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#09090b" : "#ffffff");
-          var link = document.querySelector('link[rel="manifest"]');
-          if (link)
-            link.setAttribute(
-              "href",
-              dark ? "/manifest-dark.webmanifest" : "/manifest.webmanifest",
-            );
-        } catch (e) {}
-      })();
-    </script>
+</head>
 
-    <!-- CSS tối thiểu, inline: nền + màn hình khởi động hiển thị đúng theme trước cả khi file CSS chính tải xong. -->
-    <style>
-      /* Giá trị dự phòng = --background / --primary của src/styles/theme.css (theme.css chưa tải ở thời điểm này). */
-      html {
-        background: #ffffff;
-        color-scheme: light;
-      }
-      html.dark {
-        background: #09090b;
-        color-scheme: dark;
-      }
-      body {
-        margin: 0;
-      }
-      .boot {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-      }
-      .boot img {
-        width: 64px;
-        height: 64px;
-        border-radius: 16px;
-        animation: boot-pulse 1.4s ease-in-out infinite;
-      }
-      .boot i {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #00786f;
-        margin: 0 3px;
-        animation: boot-bounce 1s infinite ease-in-out both;
-      }
-      html.dark .boot i {
-        background: #00bba7;
-      }
-      .boot i:nth-child(1) {
-        animation-delay: -0.3s;
-      }
-      .boot i:nth-child(2) {
-        animation-delay: -0.15s;
-      }
-      @keyframes boot-pulse {
-        0%,
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.75;
-          transform: scale(0.96);
-        }
-      }
-      @keyframes boot-bounce {
-        0%,
-        80%,
-        100% {
-          transform: translateY(0);
-        }
-        40% {
-          transform: translateY(-6px);
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .boot img,
-        .boot i {
-          animation: none;
-        }
-      }
-    </style>
-  </head>
-  <body class="bg-surface text-on-surface font-sans antialiased">
-    <!-- Màn hình khởi động tĩnh: hiện ngay lập tức, React sẽ thay thế khi mount. -->
-    <div id="root">
-      <div class="boot">
-        <img src="/icons/icon-192.png" alt="" width="64" height="64" />
-        <div><i></i><i></i><i></i></div>
-      </div>
-    </div>
-    <noscript
-      >Moody cần bật JavaScript để hoạt động. / Moody requires JavaScript to
-      run.</noscript
-    >
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<body>
+  <!-- Màn hình khởi động tĩnh (chỉ logo): hiện ngay lập tức, React sẽ thay thế khi mount. -->
+  <div id="root">
+
+  </div>
+  <noscript>Moody cần bật JavaScript để hoạt động. / Moody requires JavaScript to
+    run.</noscript>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

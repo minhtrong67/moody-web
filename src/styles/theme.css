@@ -1,68 +1,105 @@
+/* =====================================================================
+   Moody — bảng màu (nguồn màu duy nhất của app)
+   ---------------------------------------------------------------------
+   • Màu chủ đạo : Tailwind teal-500            → nút, switch, tab đang chọn, biểu đồ…
+   • Màu nền     : Tailwind stone (xám ấm)      → sáng: stone-50 · tối: stone-900 (#1c1917, KHÔNG phải đen thuần)
+   • Chữ trên nền teal-500 dùng teal-950 (chữ trắng trên teal-500 chỉ đạt ~2.5:1, không đủ đọc).
+   • Chữ/icon teal trên nền thường dùng --brand (sáng: teal-700, tối: teal-500) để đủ tương phản.
+
+   Muốn đổi họ màu trung tính (stone → zinc / neutral): chỉ cần thay 11 dòng --n-* bên dưới
+   bằng một trong hai bộ đã ghi chú, mọi token còn lại tự theo.
+   ===================================================================== */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
+  /* ---- Thang trung tính: zinc (Tailwind v4) ---- */
+  --n-50: oklch(0.985 0 0);
+  --n-100: oklch(0.967 0.001 286.375);
+  --n-200: oklch(0.92 0.004 286.32);
+  --n-300: oklch(0.871 0.006 286.286);
+  --n-400: oklch(0.705 0.015 286.067);
+  --n-500: oklch(0.552 0.016 285.938);
+  --n-600: oklch(0.442 0.017 285.786);
+  --n-700: oklch(0.37 0.013 285.805);
+  --n-800: oklch(0.274 0.006 286.033);
+  --n-900: oklch(0.21 0.006 285.885);
+  --n-950: oklch(0.141 0.005 285.823);
+  /* zinc:    50 .985 0 0 · 100 .967 .001 286.375 · 200 .92 .004 286.32 · 300 .871 .006 286.286 · 400 .705 .015 286.067
+              500 .552 .016 285.938 · 600 .442 .017 285.786 · 700 .37 .013 285.805 · 800 .274 .006 286.033 · 900 .21 .006 285.885 · 950 .141 .005 285.823
+     neutral: 50 .985 0 0 · 100 .97 0 0 · 200 .922 0 0 · 300 .87 0 0 · 400 .708 0 0 · 500 .556 0 0
+              600 .439 0 0 · 700 .371 0 0 · 800 .269 0 0 · 900 .205 0 0 · 950 .145 0 0   (mỗi giá trị là oklch(L C H)) */
+
+  /* ---- Thang teal (Tailwind v4) ---- */
+  --teal-50: oklch(0.984 0.014 180.72);
+  --teal-300: oklch(0.855 0.138 181.071);
+  --teal-400: oklch(0.777 0.152 181.912);
+  --teal-500: oklch(0.704 0.14 182.503);
+  --teal-600: oklch(0.6 0.118 184.704);
+  --teal-700: oklch(0.511 0.096 186.391);
+  --teal-800: oklch(0.437 0.078 188.216);
+  --teal-950: oklch(0.277 0.046 192.524);
+
+  /* ---- Token (tên theo shadcn) — SÁNG ---- */
+  --background: var(--n-50);
+  --foreground: var(--n-900);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
+  --card-foreground: var(--n-900);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.511 0.096 186.391);
-  --primary-foreground: oklch(0.984 0.014 180.72);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
+  --popover-foreground: var(--n-900);
+  --primary: var(--teal-500);
+  --primary-foreground: var(--teal-950);
+  --brand: var(--teal-700);
+  --secondary: color-mix(in oklab, var(--n-100) 50%, var(--n-200));
+  --secondary-foreground: var(--n-900);
+  --muted: color-mix(in oklab, var(--n-100) 50%, var(--n-200));
+  --muted-foreground: var(--n-500);
+  --accent: color-mix(in oklab, var(--n-100) 50%, var(--n-200));
+  --accent-foreground: var(--n-900);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.855 0.138 181.071);
-  --chart-2: oklch(0.704 0.14 182.503);
-  --chart-3: oklch(0.6 0.118 184.704);
-  --chart-4: oklch(0.511 0.096 186.391);
-  --chart-5: oklch(0.437 0.078 188.216);
+  --border: var(--n-200);
+  --input: var(--n-300);
+  --ring: var(--teal-500);
+  --chart-1: var(--teal-300);
+  --chart-2: var(--teal-500);
+  --chart-3: var(--teal-600);
+  --chart-4: var(--teal-700);
+  --chart-5: var(--teal-800);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.6 0.118 184.704);
-  --sidebar-primary-foreground: oklch(0.984 0.014 180.72);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--n-900);
+  --sidebar-primary: var(--teal-500);
+  --sidebar-primary-foreground: var(--teal-950);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--n-900);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--teal-500);
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.437 0.078 188.216);
-  --primary-foreground: oklch(0.984 0.014 180.72);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
+  /* ---- Token — TỐI (stone-900 làm nền, thẻ nổi lên một bậc, không đen thuần) ---- */
+  --background: var(--n-900);
+  --foreground: var(--n-50);
+  --card: var(--n-800);
+  --card-foreground: var(--n-50);
+  --popover: var(--n-800);
+  --popover-foreground: var(--n-50);
+  --primary: var(--teal-500);
+  --primary-foreground: var(--teal-950);
+  --brand: var(--teal-500);
+  --secondary: color-mix(in oklab, var(--n-800) 55%, var(--n-700));
+  --secondary-foreground: var(--n-50);
+  --muted: color-mix(in oklab, var(--n-800) 55%, var(--n-700));
+  --muted-foreground: var(--n-400);
+  --accent: color-mix(in oklab, var(--n-800) 55%, var(--n-700));
+  --accent-foreground: var(--n-50);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-  --chart-1: oklch(0.855 0.138 181.071);
-  --chart-2: oklch(0.704 0.14 182.503);
-  --chart-3: oklch(0.6 0.118 184.704);
-  --chart-4: oklch(0.511 0.096 186.391);
-  --chart-5: oklch(0.437 0.078 188.216);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.704 0.14 182.503);
-  --sidebar-primary-foreground: oklch(0.277 0.046 192.524);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --ring: var(--teal-500);
+  --sidebar: var(--n-800);
+  --sidebar-foreground: var(--n-50);
+  --sidebar-primary: var(--teal-500);
+  --sidebar-primary-foreground: var(--teal-950);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--n-50);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  --sidebar-ring: var(--teal-500);
 }

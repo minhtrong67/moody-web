@@ -43,7 +43,7 @@ export function ToastProvider({ children }) {
         {toast && (
           <div
             key={toast.id}
-            className="toast-enter pointer-events-auto flex items-center gap-3 w-full max-w-md min-h-12 pl-3 pr-2 py-2 rounded-lg bg-popover text-popover-foreground border border-outline-variant shadow-elev-4 backdrop-blur"
+            className="toast-enter pointer-events-auto flex items-center gap-3 w-full max-w-md min-h-12 pl-3 pr-2 py-2 rounded-lg bg-popover text-popover-foreground border border-outline-variant shadow-elev-4"
           >
             {Icon && (
               <span className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${variant.tone}`}>

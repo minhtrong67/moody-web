@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
+import { useCheckIn } from "../context/CheckInContext";
 import { Pencil, ArrowRight, NotebookPen, Flame, TrendingUp, CalendarCheck2, ChevronRight } from "../components/icons";
 import { useAuth } from "../context/AuthContext";
 import { useMoodEntries } from "../hooks/useMoodEntries";
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const { activities } = useActivities();
   const { moodByKey } = useMoods();
   const { t, locale } = useI18n();
+  const { openCheckIn } = useCheckIn();
 
   const today = todayISO();
   const todayEntry = entries.find((e) => e.date === today);
@@ -81,9 +83,9 @@ export default function Dashboard() {
                   <p className="t-title-medium">{t("dash.checkedIn", { mood: moodByKey(todayEntry.mood)?.label })}</p>
                   {todayEntry.note && <p className="t-body-medium opacity-80 mt-0.5 line-clamp-2">{todayEntry.note}</p>}
                 </div>
-                <Link to={`/checkin/${todayEntry.id}`} className="icon-btn state bg-surface/60 text-on-primary-container" aria-label={t("dash.editCheckin")}>
+                <button onClick={() => openCheckIn({ id: todayEntry.id })} className="icon-btn state bg-surface/60 text-on-primary-container" aria-label={t("dash.editCheckin")}>
                   <Pencil size={20} />
-                </Link>
+                </button>
               </div>
             ) : (
               <div className="bg-primary-container text-on-primary-container rounded-xl p-5">
@@ -96,10 +98,10 @@ export default function Dashboard() {
                     <p className="t-body-medium opacity-80">{t("dash.fewSeconds")}</p>
                   </div>
                 </div>
-                <Link to="/checkin" className="btn btn-filled state">
+                <button onClick={() => openCheckIn()} className="btn btn-filled state">
                   {t("dash.checkinNow")}
                   <ArrowRight size={18} />
-                </Link>
+                </button>
               </div>
             )}
           </div>
@@ -154,7 +156,7 @@ export default function Dashboard() {
                     {recent.map((e) => {
                       const m = moodByKey(e.mood);
                       return (
-                        <Link key={e.id} to={`/checkin/${e.id}`} className="state flex items-center gap-4 card-filled px-4 py-3">
+                        <button key={e.id} onClick={() => openCheckIn({ id: e.id })} className="state w-full text-left flex items-center gap-4 card-filled px-4 py-3">
                           <span className="w-10 h-10 rounded-full flex items-center justify-center text-xl shrink-0" style={{ background: m.color + "40" }}>
                             {m.emoji}
                           </span>
@@ -167,7 +169,7 @@ export default function Dashboard() {
                             </p>
                           </div>
                           <ChevronRight size={24} className="text-on-surface-variant shrink-0" />
-                        </Link>
+                        </button>
                       );
                     })}
                   </div>

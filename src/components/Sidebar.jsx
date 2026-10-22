@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { useCheckIn } from '../context/CheckInContext'
 import { Home, HistoryIcon, BarChart3, Settings, ListPlus, Smile, Plus } from './icons'
 import { useI18n } from '../i18n'
 import { useAuth } from '../context/AuthContext'
@@ -20,7 +21,7 @@ export const NAV_MANAGE = [
 function DrawerBody({ onNavigate }) {
   const { t } = useI18n()
   const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { openCheckIn } = useCheckIn()
   return (
     <>
       <div className="flex items-center gap-2.5 px-5 h-16 shrink-0">
@@ -31,7 +32,7 @@ function DrawerBody({ onNavigate }) {
       {/* Extended FAB — chỉ hiện ở drawer cố định (màn hình lớn) */}
       <div className="px-3 pb-3 hidden lg:block">
         <button
-          onClick={() => navigate('/checkin')}
+          onClick={() => openCheckIn()}
           className="btn btn-filled btn-lg state w-full justify-start gap-2"
         >
           <Plus size={18} />
@@ -41,12 +42,12 @@ function DrawerBody({ onNavigate }) {
 
       <nav className="flex-1 overflow-y-auto px-3 pb-4" aria-label={t('nav.label')}>
         {NAV_MAIN.map((l) => (
-          <DrawerLink key={l.to} {...l} label={t(l.key)} onClick={onNavigate} />
+          <DrawerLink key={l.to} to={l.to} icon={l.icon} end={l.end} label={t(l.key)} onClick={onNavigate} />
         ))}
         <div className="h-px bg-outline-variant mx-3 my-3" />
         <p className="t-label-medium text-on-surface-variant px-3 h-8 flex items-center">{t('nav.manage')}</p>
         {NAV_MANAGE.map((l) => (
-          <DrawerLink key={l.to} {...l} label={t(l.key)} onClick={onNavigate} />
+          <DrawerLink key={l.to} to={l.to} icon={l.icon} end={l.end} label={t(l.key)} onClick={onNavigate} />
         ))}
       </nav>
 
@@ -128,12 +129,12 @@ export function PermanentDrawer() {
 // Navigation rail (tablet / laptop nhỏ, 768–1023px): FAB + các đích đến chính + mục quản lý.
 export function NavRail() {
   const { t } = useI18n()
-  const navigate = useNavigate()
+  const { openCheckIn } = useCheckIn()
   const items = [...NAV_MAIN, ...NAV_MANAGE]
   return (
     <aside className="hidden md:flex lg:hidden flex-col items-center w-20 shrink-0 sticky top-0 h-[100dvh] bg-surface py-4 gap-1 overflow-y-auto no-scrollbar border-r border-outline-variant">
       <button
-        onClick={() => navigate('/checkin')}
+        onClick={() => openCheckIn()}
         aria-label={t('nav.newCheckin')}
         className="state w-11 h-11 mb-4 rounded-md bg-primary text-on-primary flex items-center justify-center shrink-0"
       >

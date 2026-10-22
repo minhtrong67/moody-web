@@ -13,6 +13,7 @@ export default {
   'common.edit': 'Sửa',
   'common.delete': 'Xóa',
   'common.back': 'Quay lại',
+  'common.close': 'Đóng',
   'common.loading': 'Đang tải…',
   'common.logout': 'Đăng xuất',
   'common.scrollTop': 'Lên đầu trang',

@@ -1,40 +1,37 @@
-import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useMountTransition, useBodyScrollLock, useEscape } from '../hooks/useOverlay'
 
-// Dialog phẳng: nền card, viền mảnh, bo góc theo --radius, tiêu đề đậm vừa.
-// Nút hành động đặt trong `children` (dùng <DialogActions>).
+// Dialog phẳng: nền popover, viền mảnh, bo góc theo --radius, tiêu đề đậm vừa.
+// Nút hành động đặt trong `children` (dùng <DialogActions>); mỗi nút nên có icon + label + nền màu.
+// Có animation mở/đóng (opacity + scale) — chỉ dùng thuộc tính chạy trên GPU.
 export default function Dialog({ open, title, onClose, children }) {
-  useEffect(() => {
-    if (!open) return
-    function onKey(e) {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  const { mounted, visible } = useMountTransition(open, 200)
+  useBodyScrollLock(mounted)
+  useEscape(open, onClose)
 
-  if (!open) return null
+  if (!mounted) return null
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-6 scrim animate-[fadeIn_0.2s_ease_both]"
-      onClick={onClose}
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-6" role="presentation">
+      <div
+        className={`absolute inset-0 scrim transition-opacity duration-200 ease-out ${visible ? 'opacity-100' : 'opacity-0'}`}
+        onClick={onClose}
+      />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm bg-popover text-popover-foreground border border-outline-variant rounded-xl p-6 pop-in shadow-elev-4"
+        className={`relative w-full max-w-sm bg-popover text-popover-foreground border border-outline-variant rounded-xl p-6 shadow-elev-4 transition-[opacity,transform] duration-200 ease-emphasized-decel ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
       >
         <p className="t-headline-small mb-4">{title}</p>
         {children}
       </div>
-    </div>
-    , document.body)
+    </div>,
+    document.body
+  )
 }
 
+// Hai nút bằng nhau, dễ bấm bằng ngón tay: [Hủy] [Xác nhận].
 export function DialogActions({ children }) {
-  return <div className="flex justify-end gap-2 mt-6">{children}</div>
+  return <div className="grid grid-cols-2 gap-3 mt-6">{children}</div>
 }

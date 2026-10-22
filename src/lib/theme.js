@@ -1,15 +1,11 @@
 // Quản lý giao diện: chế độ sáng/tối/hệ thống và cỡ chữ.
-// Bảng màu nằm trong src/styles/theme.css (teal-zinc); chế độ tối bật bằng class `.dark` trên <html>.
+// Bảng màu nằm trong src/styles/theme.css (teal-500 + nền stone); chế độ tối bật bằng class `.dark` trên <html>.
 const THEME_KEY = 'theme'
 const FONT_KEY = 'fontScale'
 
-// Màu nền dùng cho thanh trạng thái / splash của PWA. PHẢI khớp --background trong theme.css:
-//   sáng  oklch(1 0 0)                    → #ffffff
-//   tối   oklch(0.141 0.005 285.823)      → #09090b
-// (index.html có bản sao của hai giá trị này để chạy trước khi tải JS.)
-export const PWA_COLORS = { light: '#ffffff', dark: '#09090b' }
-// Màu nhấn dùng cho báo cáo PDF/PNG (nền trắng): --primary của theme sáng, oklch(0.511 0.096 186.391).
-export const REPORT_ACCENT = '#00786f'
+// Màu nhấn dùng cho báo cáo PDF/PNG (nền trắng): teal-600 — đậm hơn --primary (teal-500) một bậc
+// để tiêu đề/chữ nhỏ trên nền trắng vẫn đủ tương phản.
+export const REPORT_ACCENT = '#009689'
 
 const VALID_THEMES = ['light', 'dark', 'system']
 
@@ -70,27 +66,10 @@ export function readRole(name) {
   }
 }
 
-// Đồng bộ phần "vỏ" của PWA với theme đang dùng:
-//  • <meta theme-color>   → thanh trạng thái / thanh tiêu đề
-//  • <link rel=manifest>  → manifest sáng hoặc tối; Android lấy background_color của manifest làm màu
-//    splash lúc mở app. Manifest chỉ nhận một màu nên ta đổi cả file manifest theo theme (xem public/).
-export function syncPwaChrome(dark = isDarkNow()) {
-  const color = dark ? PWA_COLORS.dark : PWA_COLORS.light
-  const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) {
-    meta.removeAttribute('media')
-    meta.setAttribute('content', color)
-  }
-  const link = document.querySelector('link[rel="manifest"]')
-  const href = dark ? '/manifest-dark.webmanifest' : '/manifest.webmanifest'
-  if (link && link.getAttribute('href') !== href) link.setAttribute('href', href)
-}
-
 export function applyTheme(theme) {
   const isDark =
     theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
   document.documentElement.classList.toggle('dark', isDark)
-  syncPwaChrome(isDark)
 }
 
 export function setTheme(theme) {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Pencil, RotateCcw } from '../components/icons'
+import { Pencil, RotateCcw, Check, X } from '../components/icons'
 import { useMoods } from '../hooks/useMoods'
 import Dialog, { DialogActions } from '../components/Dialog'
 import TextField from '../components/TextField'
@@ -58,6 +58,7 @@ export default function ManageMoods() {
         title={t('manageMoods.resetTitle')}
         description={t('manageMoods.resetText')}
         confirmLabel={t('manageMoods.reset')}
+        confirmIcon={RotateCcw}
         danger
         onConfirm={confirmReset}
         onCancel={() => setPendingReset(null)}
@@ -85,8 +86,14 @@ export default function ManageMoods() {
           />
         </div>
         <DialogActions>
-          <button onClick={closeForm} className="btn btn-text state">{t('common.cancel')}</button>
-          <button onClick={handleSubmit} disabled={!label.trim()} className="btn btn-text state">{t('common.update')}</button>
+          <button onClick={closeForm} className="btn btn-tonal state">
+            <X size={18} />
+            {t('common.cancel')}
+          </button>
+          <button onClick={handleSubmit} disabled={!label.trim()} className="btn btn-filled state">
+            <Check size={18} />
+            {t('common.update')}
+          </button>
         </DialogActions>
       </Dialog>
 

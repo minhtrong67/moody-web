@@ -5,6 +5,7 @@ import { I18nProvider } from './i18n'
 import { ToastProvider } from './context/ToastContext'
 import { MoodEntriesProvider } from './context/MoodEntriesContext'
 import { ActivitiesProvider } from './context/ActivitiesContext'
+import { CheckInProvider } from './context/CheckInContext'
 import { MoodsProvider } from './context/MoodsContext'
 import AppShell from './components/AppShell'
 import { isGuest } from './lib/session'
@@ -13,7 +14,6 @@ import { getStartPage } from './lib/startPage'
 
 const loaders = {
   Dashboard: () => import('./pages/Dashboard'),
-  CheckIn: () => import('./pages/CheckIn'),
   History: () => import('./pages/History'),
   Statistics: () => import('./pages/Statistics'),
   Settings: () => import('./pages/Settings'),
@@ -24,7 +24,7 @@ const loaders = {
 const Landing = lazy(() => import('./pages/Landing'))
 const Login = lazy(() => import('./pages/Login'))
 const Dashboard = lazy(loaders.Dashboard)
-const CheckIn = lazy(loaders.CheckIn)
+import CheckIn from './pages/CheckIn'
 const History = lazy(loaders.History)
 const Statistics = lazy(loaders.Statistics)
 const Settings = lazy(loaders.Settings)
@@ -38,16 +38,11 @@ function prefetchPages() {
   else setTimeout(run, 1500)
 }
 
-// Giữ giống hệt màn hình khởi động tĩnh trong index.html để chuyển tiếp liền mạch (không nháy).
+// Giữ giống hệt màn hình khởi động tĩnh trong index.html (chỉ logo app) để chuyển tiếp liền mạch.
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-[18px] bg-surface">
-      <img src="/icons/icon-192.png" alt="" className="w-16 h-16 rounded-xl animate-pulse" />
-      <div className="flex gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-brand animate-bounce [animation-delay:-0.3s]" />
-        <span className="w-2 h-2 rounded-full bg-brand animate-bounce [animation-delay:-0.15s]" />
-        <span className="w-2 h-2 rounded-full bg-brand animate-bounce" />
-      </div>
+    <div className="min-h-[100dvh] flex items-center justify-center bg-surface">
+      <img src="/icons/icon-192.png" alt="" width="64" height="64" className="w-16 h-16 rounded-xl" />
     </div>
   )
 }
@@ -113,9 +108,9 @@ function Gate() {
               <Route path="/settings" element={page(Settings, 'settings')} />
               <Route path="/manage/activities" element={page(ManageActivities, 'manage')} />
               <Route path="/manage/moods" element={page(ManageMoods, 'manage')} />
+              <Route path="/checkin" element={<CheckIn />} />
+              <Route path="/checkin/:id" element={<CheckIn />} />
             </Route>
-            <Route path="/checkin" element={page(CheckIn, 'form')} />
-            <Route path="/checkin/:id" element={page(CheckIn, 'form')} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         ) : (
@@ -135,7 +130,9 @@ export default function App() {
             <MoodsProvider>
               <ToastProvider>
                 <HashRouter>
-                  <Gate />
+                  <CheckInProvider>
+                    <Gate />
+                  </CheckInProvider>
                 </HashRouter>
               </ToastProvider>
             </MoodsProvider>

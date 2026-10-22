@@ -147,7 +147,7 @@ export default function Statistics() {
         <StatsBodySkeleton />
       ) : (
         <>
-          <div className="space-y-2 mb-8 md:space-y-0 md:grid md:grid-cols-2 2xl:grid-cols-4 md:gap-3">
+          <div className="grid grid-cols-2 gap-3 mb-8 2xl:grid-cols-4">
             <StatRow icon={Smile} label={t('stats.avgMood')} value={stats.avg != null ? `${stats.avg.toFixed(1)}/5` : '—'} color="#8FBF7F" />
             <StatRow icon={CalendarCheck2} label={t('stats.checkinDays')} value={stats.checkinDays} color="#9FB8C8" />
             <StatRow icon={Flame} label={t('stats.streak')} value={stats.streak} color="#F0A34E" />
@@ -271,12 +271,15 @@ function LegendList({ items, color }) {
 
 function StatRow({ icon: Icon, label, value, emoji, color }) {
   return (
-    <div className="card-filled px-4 py-3 flex items-center gap-4 min-w-0">
-      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-xl" style={{ background: color + '40', color }}>
+    <div className="card-filled p-3 md:px-4 md:py-3 flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4 min-w-0">
+      <span
+        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-xl"
+        style={{ background: color + '40', color }}
+      >
         {emoji || <Icon size={24} />}
       </span>
-      <p className="t-body-large text-on-surface-variant flex-1 min-w-0 truncate">{label}</p>
-      <p className="t-title-large leading-none shrink-0">{value}</p>
+      <p className="t-body-medium md:t-body-large text-on-surface-variant w-full md:w-auto md:flex-1 min-w-0 truncate">{label}</p>
+      <p className="t-title-large leading-none max-w-full min-w-0 truncate md:shrink-0">{value}</p>
     </div>
   )
 }

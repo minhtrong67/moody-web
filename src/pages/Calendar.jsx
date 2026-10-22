@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useCheckIn } from '../context/CheckInContext'
 import { useMoodEntries } from '../hooks/useMoodEntries'
 import { useActivities } from '../hooks/useActivities'
 import { moodByKey } from '../lib/moodConfig'
@@ -10,6 +10,7 @@ const MONTHS_VI = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Thán
 
 export default function CalendarPage() {
   const { entries } = useMoodEntries()
+  const { openCheckIn } = useCheckIn()
   const { activities } = useActivities()
   const activityById = useMemo(() => Object.fromEntries(activities.map((a) => [a.id, a])), [activities])
   const [cursor, setCursor] = useState(new Date())
@@ -77,7 +78,7 @@ export default function CalendarPage() {
         <div className="mt-6 card-filled p-4">
           <div className="flex items-center justify-between mb-1">
             <p className="font-medium">{moodByKey(selectedEntry.mood)?.emoji} {moodByKey(selectedEntry.mood)?.label} · {selected}</p>
-            <Link to={`/checkin/${selectedEntry.id}`} className="text-xs text-brand shrink-0">Sửa</Link>
+            <button onClick={() => openCheckIn({ id: selectedEntry.id })} className="text-xs text-brand shrink-0">Sửa</button>
           </div>
           {selectedEntry.note && <p className="text-sm text-on-surface-variant mb-2">{selectedEntry.note}</p>}
           {(selectedEntry.activities?.length > 0) && (
@@ -86,7 +87,7 @@ export default function CalendarPage() {
                 const a = activityById[id]
                 if (!a) return null
                 return (
-                  <span key={id} className="text-[11px] px-2 py-1 rounded-full bg-surface-container-low text-on-surface-variant flex items-center gap-1">
+                  <span key={id} className="text-[11px] px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant flex items-center gap-1">
                     <span>{a.emoji}</span>{a.label}
                   </span>
                 )

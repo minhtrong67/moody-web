@@ -13,6 +13,7 @@ export default {
   'common.edit': 'Edit',
   'common.delete': 'Delete',
   'common.back': 'Back',
+  'common.close': 'Close',
   'common.loading': 'Loading…',
   'common.logout': 'Sign out',
   'common.scrollTop': 'Back to top',

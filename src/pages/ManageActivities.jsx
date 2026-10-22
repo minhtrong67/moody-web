@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, GripVertical, ArrowUp, ArrowDown, Loader2, Search, X } from '../components/icons'
+import { Plus, GripVertical, ArrowUp, ArrowDown, Loader2, Search, X, Check } from '../components/icons'
 import { useSessionState } from '../hooks/useSessionState'
 import { useActivities } from '../hooks/useActivities'
 import { useToast } from '../context/ToastContext'
@@ -213,9 +213,12 @@ export default function ManageActivities() {
           />
         </div>
         <DialogActions>
-          <button onClick={closeForm} disabled={saving} className="btn btn-text state">{t('common.cancel')}</button>
-          <button onClick={handleSubmit} disabled={!label.trim() || saving} className="btn btn-text state">
-            {saving && <Loader2 size={16} />}
+          <button onClick={closeForm} disabled={saving} className="btn btn-tonal state">
+            <X size={18} />
+            {t('common.cancel')}
+          </button>
+          <button onClick={handleSubmit} disabled={!label.trim() || saving} className="btn btn-filled state">
+            {saving ? <Loader2 size={18} /> : <Check size={18} />}
             {editingId ? t('common.update') : t('common.save')}
           </button>
         </DialogActions>
@@ -236,7 +239,7 @@ export default function ManageActivities() {
             style={{ zIndex: dragActiveIndex === i ? 10 : 'auto' }}
           >
             <SwipeableRow onEdit={() => openEdit(a)} onDelete={() => setPendingDelete(a)}>
-              <div className={`flex items-center gap-2 rounded-md px-2 py-2 transition-shadow ${dragActiveIndex === i ? 'shadow-elev-3 bg-surface-container-high' : 'bg-surface border border-outline-variant'}`}>
+              <div className={`flex items-center gap-2 rounded-md px-2 py-2 transition-shadow ${dragActiveIndex === i ? 'shadow-elev-3 bg-surface-container-high' : 'bg-surface-container-low border border-outline-variant'}`}>
                 {canReorder ? (
                   <span
                     onPointerDown={(e) => handleGripPointerDown(e, i)}
@@ -248,7 +251,7 @@ export default function ManageActivities() {
                 ) : (
                   <span className="w-2 shrink-0" />
                 )}
-                <span className="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-xl shrink-0">{a.emoji}</span>
+                <span className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-xl shrink-0">{a.emoji}</span>
                 <div className="flex-1 min-w-0 pl-1">
                   <p className="t-body-large truncate">{a.label}</p>
                   <p className="t-body-small text-on-surface-variant">{a.custom ? t('manageActs.custom') : t('manageActs.default')}</p>

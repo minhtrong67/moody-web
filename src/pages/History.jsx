@@ -1,9 +1,9 @@
 import { memo, useCallback, useDeferredValue, useMemo, useState } from "react";
 import { useSessionState, reviveDate } from "../hooks/useSessionState";
-import { useNavigate } from "react-router-dom";
+import { useCheckIn } from "../context/CheckInContext";
 import {
   List, Calendar as CalendarIcon, Search, ChevronLeft, ChevronRight, SlidersHorizontal,
-  ChevronDown, Clock3, Pencil, Trash2, RotateCcw,
+  ChevronDown, Clock3, Pencil, Trash2, RotateCcw, X,
 } from "../components/icons";
 import { useMoodEntries } from "../hooks/useMoodEntries";
 import { useActivities } from "../hooks/useActivities";
@@ -54,7 +54,7 @@ export default function History() {
 }
 
 function ListView({ loading, entries, deleteEntry, activityById, moodByKey, moods }) {
-  const navigate = useNavigate();
+  const { openCheckIn } = useCheckIn();
   const { t, locale } = useI18n();
   const [period, setPeriod] = useSessionState("history.period", "all");
   const [moodFilter, setMoodFilter] = useSessionState("history.mood", "all");
@@ -106,7 +106,7 @@ function ListView({ loading, entries, deleteEntry, activityById, moodByKey, mood
     deleteEntry(pendingDelete.id);
     setPendingDelete(null);
   };
-  const handleEdit = useCallback((id) => navigate(`/checkin/${id}`), [navigate]);
+  const handleEdit = useCallback((id) => openCheckIn({ id }), [openCheckIn]);
 
   return (
     <>
@@ -230,15 +230,15 @@ const EntryCard = memo(function EntryCard({ entry: e, mood: m, activityById, onE
 
           {e.note && <p className="t-body-medium text-on-surface-variant mt-3">{e.note}</p>}
           {e.activities?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3">
+            <div className="grid grid-cols-3 items-center gap-1.5 mt-3">
               {e.activities.map((id) => {
                 const a = activityById[id];
                 if (!a) return null;
                 return (
-                  <span key={id} className="chip chip-static !bg-surface-container-low">
+                  <div key={id} className="chip chip-static flex items-center justify-center w-full">
                     <span>{a.emoji}</span>
                     {a.label}
-                  </span>
+                  </div>
                 );
               })}
             </div>
@@ -250,10 +250,11 @@ const EntryCard = memo(function EntryCard({ entry: e, mood: m, activityById, onE
 });
 
 function CalendarView({ loading, entries, activityById, moodByKey, moods }) {
-  const navigate = useNavigate();
+  const { openCheckIn } = useCheckIn();
   const { t, locale } = useI18n();
   const [cursor, setCursor] = useSessionState("history.cursor", () => new Date(), { revive: reviveDate });
   const [selected, setSelected] = useState(null);
+  const [sheetOpen, setSheetOpen] = useState(false); // tách khỏi `selected` để nội dung còn nguyên khi chạy animation đóng
 
   // Mọi check-in của từng ngày (mới nhất trước); ô lịch hiển thị check-in mới nhất.
   const byDate = useMemo(() => {
@@ -274,8 +275,13 @@ function CalendarView({ loading, entries, activityById, moodByKey, moods }) {
   for (let d = 1; d <= total; d++) cells.push(d);
 
   const isoFor = (d) => `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-  const handleDayClick = (iso) => (byDate[iso] ? setSelected(iso) : navigate(`/checkin?date=${iso}`));
-  const closeSheet = useCallback(() => setSelected(null), []);
+  const handleDayClick = (iso) => {
+    if (byDate[iso]) {
+      setSelected(iso);
+      setSheetOpen(true);
+    } else openCheckIn({ date: iso });
+  };
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
   const selectedList = selected ? byDate[selected] || [] : [];
   const monthLabel = cursor.toLocaleDateString(locale, { month: "long", year: "numeric" });
   const monthPrefix = `${year}-${String(month + 1).padStart(2, "0")}`;
@@ -291,7 +297,17 @@ function CalendarView({ loading, entries, activityById, moodByKey, moods }) {
 
   return (
     <div className="pb-4 pop-in lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:gap-10 lg:items-start">
-      <BottomSheet open={!!selected} title={selectedLabel} onClose={closeSheet}>
+      <BottomSheet
+        open={sheetOpen}
+        title={selectedLabel}
+        onClose={closeSheet}
+        footer={
+          <button onClick={closeSheet} className="btn btn-tonal btn-lg btn-block state">
+            <X size={18} />
+            {t("common.close")}
+          </button>
+        }
+      >
         <p className="t-body-small text-on-surface-variant -mt-2 mb-4">{t("history.count", { n: selectedList.length })}</p>
         <ul className="space-y-3">
           {selectedList.map((e) => (
@@ -371,7 +387,7 @@ function EntryDetail({ entry: e, mood: m, activityById, t, locale }) {
             const a = activityById[id];
             if (!a) return null;
             return (
-              <span key={id} className="chip chip-static !bg-surface-container-low">
+              <span key={id} className="chip chip-static">
                 <span>{a.emoji}</span>
                 {a.label}
               </span>
@@ -395,11 +411,11 @@ function MonthSummary({ entries, moods, t }) {
     <aside className="mt-6 lg:mt-0 card-filled p-5 lg:sticky lg:top-20">
       <p className="t-title-medium mb-4">{t("history.monthSummary")}</p>
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="rounded-md bg-surface-container-low border border-outline-variant px-4 py-3">
+        <div className="rounded-md bg-surface-container-high border border-outline-variant px-4 py-3">
           <p className="t-headline-small leading-none">{entries.length}</p>
           <p className="t-label-medium text-on-surface-variant mt-1.5">{t("history.monthDays")}</p>
         </div>
-        <div className="rounded-md bg-surface-container-low border border-outline-variant px-4 py-3">
+        <div className="rounded-md bg-surface-container-high border border-outline-variant px-4 py-3">
           <p className="t-headline-small leading-none">{avg != null ? `${avg.toFixed(1)}/5` : "—"}</p>
           <p className="t-label-medium text-on-surface-variant mt-1.5">{t("history.monthAvg")}</p>
         </div>

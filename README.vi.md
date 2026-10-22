@@ -109,9 +109,6 @@ Các thẻ chia sẻ (Open Graph, Twitter Card, JSON-LD, canonical, hreflang, `r
 
 Toast theo theme (nền popover + viền mảnh, các biến thể `success` / `info` / `error`) ở cả sáng và tối.
 
-## PWA
-
-Manifest do `vite-plugin-pwa` sinh ra (xem `vite.config.js`) và đây là nơi duy nhất đặt màu mặc định cho PWA (`theme_color: '#00bba7'`, `background_color: '#fafaf9'`). Khi mở app từ màn hình chính, hệ điều hành chỉ hiện logo app trên nền mặc định đó — không có ảnh splash, không có manifest sáng/tối và không kiểm tra theme lúc khởi động. `index.html` chỉ có màn hình khởi động chứa logo, chuyển sang React liền mạch.
 
 ## Bắt đầu
 
